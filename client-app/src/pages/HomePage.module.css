@@ -221,24 +221,75 @@
     filter:brightness(1);    
 }
 
-.chat-window{
-    width:420px;
-    height:420px;   
+.chat-window-contain{
     position:fixed;
     transform:translate(-50%,-50%);
     left:50%;
     top:50%;
+    
+}
+
+.chat-window{
+    position: relative;
+    animation: shake 1s 1;
+    /* animation: shake 2s infinite; */
+    width:420px;
+    height:420px;   
+    /* position:fixed; */
+    /* transform:translate(-50%,-50%);
+    left:50%;
+    top:50%; */
     display:flex;
     flex-direction:column;
     border:1px solid rgb(150 150 150);
     padding:1em;
     background-color:white;
     border-radius:12px;
+    box-shadow: 3px 6px 6px 6px hsla(0, 0%, 0%, 0.215);
 }
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0) rotate(0);
+        /* transform: translateX(0);
+        transform: translateY(0); */
+    }
+    10%{
+        transform: translateX(-5px) rotate(-10deg);
+        /* transform: translateX(-5px); */
+        /* transform: translateY(-5px); */
+    }
+    30%{
+        transform: translateX(-5px) rotate(8deg);
+        /* transform: translateX(-5px); */
+        /* transform: translateY(-5px); */
+    }
+    50%{
+        transform: translateX(-5px) rotate(-6deg);
+        /* transform: translateX(-5px); */
+        /* transform: translateY(-5px); */
+    }
+    70%{
+        transform: translateX(-5px) rotate(4deg);
+        /* transform: translateX(-5px); */
+        /* transform: translateY(-5px); */
+    }
+    90%{
+        transform: translateX(-5px) rotate(-2deg);
+        /* transform: translateX(-5px); */
+        /* transform: translateY(-5px); */
+    }
+    
+}
+
 .header{
     display:flex;
+    height:10%;
     justify-content:space-between;
     align-items:center;
+    padding-bottom:6px;
+    border-bottom:1px solid rgb(147, 143, 143);
+    
 }
 .header button{
     height:36px;
@@ -251,6 +302,15 @@
     align-items:center;
     cursor:pointer;
 }
+
+.chatting{
+    display:flex;
+    flex-direction:column;
+    gap:1em;
+    height:80%;
+    margin:1em 0;
+}
+
 .client{
         display: flex;
         flex-direction: column;
@@ -278,5 +338,26 @@
 
 .chat-input{
     display:flex;
-    gap:6px;
+    gap:1em;
+    height:15%;
+    width:108%;
+    align-self:center;
+    
+    border-top:1px solid rgb(147, 143, 143);
+    align-items:center;
+    padding-top:6px;
+    background-color:rgb(234, 231, 231);
+    margin-bottom:-1em;
+    border-radius:0 0 12px 12px;
+}
+.chat-input svg{
+    width:24px;
+    height:24px;
+    color:rgb(147, 143, 143);
+    /* fill:rgb(147, 143, 143); */
+    cursor:pointer;
+    
+}
+.chat-input input{
+    height:24px;
 }
