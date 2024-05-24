@@ -1,0 +1,129 @@
+.contain{
+    display:flex;
+    flex-direction:column;
+    gap:2em;
+    margin:2em 5%;
+    font-style:italic;
+    box-sizing:border-box;
+}
+
+
+.banner{
+    display:flex;
+    justify-content:space-between;    
+    background-color:rgb(234, 231, 231);
+    padding:5%;
+    height:120px;
+    align-items:center;
+    font-style:italic;
+}
+.banner h3{
+    color:rgb(147, 143, 143);
+}
+
+.cart{
+    display:flex;
+    flex-direction:column;
+
+}
+
+.detail{
+    display:grid;
+    grid-template-columns:66%  32%;
+    gap:2%;
+}
+
+.list{
+    display:flex;
+    flex-direction:column;
+}
+
+.list-items{
+    display:grid;
+    grid-template-columns:13% 25% 13% 13% 13% 13%;
+    gap:2%;
+}
+
+.nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    /* border:1px solid rgb(147, 143, 143); */
+    background-color:rgb(234, 231, 231);
+    padding:1em;
+
+}
+
+.nav div{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    cursor:pointer;
+    
+}
+.nav button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    cursor:pointer;
+    border-radius:3px;
+    border:1px solid rgb(147, 143, 143);
+}
+
+.nav svg{
+    width:24px;
+    height:24px;
+}
+
+.total{
+    display:flex;
+    flex-direction:column;
+    gap:1em;
+    padding:2em;
+    background-color:rgb(234, 231, 231);
+}
+.total h2{
+    margin:0;
+}
+.total hr{
+    width:100%;
+    border:1px solid rgb(147, 143, 143);
+    color:black;
+}
+.total-price{
+    display:flex;
+    flex-direction:column;
+}
+.total-price div{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.coupon{
+    display:flex;
+    flex-direction:column;
+}
+.coupon button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:18px;
+    background-color: black;
+    color:white;
+    cursor:pointer;
+    /* font-style:italic; */
+}
+.coupon input{
+    height:48px;
+    border:1px solid rgb(147, 143, 143);
+    font-size:18px;
+    padding-left:6px;
+}
+.coupon svg{
+    width:24px;
+    height:24px;
+}

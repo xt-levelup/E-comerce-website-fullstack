@@ -1,0 +1,50 @@
+.contain{
+    display:flex;
+    margin:3em 5%;
+    background-image:url("../images/banner1.jpg");
+    background-size:100% 100%;
+    font-style:italic;
+    justify-content:center;
+    padding:3em;
+}
+
+.content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3em;
+}
+
+.content form{
+    display:flex;
+    flex-direction:column;
+    width:360px;
+    gap:1em;
+}
+.content form div{
+    display:flex;
+    flex-direction:column;
+
+}
+.content button{
+    height:42px;
+    border-radius:3px;
+    background-color:black;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+.content input{
+    height:42px;
+    border-radius:3px;
+    border:1px solid rgb(150 150 150);
+    margin-bottom:-1px;
+    font-size:18px;
+    padding-left:6px;
+}
+
+.click{
+    display:flex;
+    align-items:center;
+    gap:3px;
+}
