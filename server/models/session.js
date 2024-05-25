@@ -18,6 +18,9 @@ const sessionSchema = new Schema({
       },
     },
   ],
+  expireAt: { type: Date, default: Date.now, expires: 3600 }, // 3600 giây = 60 phút
 });
 
 module.exports = mongoose.model("Session", sessionSchema);
+
+sessionSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
