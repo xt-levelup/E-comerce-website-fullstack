@@ -36,9 +36,10 @@ a:hover{
 
 .nav{
     display:flex;
-    background-color:rgb(211, 211, 227);
+    background-color:rgb(236, 236, 243);
     height:100%;
     border-radius:12px;
+    box-shadow:3px 3px 3px 6px rgba(7, 7, 127, 0.233);
 }
 
 nav{

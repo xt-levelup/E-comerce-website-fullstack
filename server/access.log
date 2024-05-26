@@ -152,3 +152,4 @@
 ::1 - - [26/May/2024:03:21:03 +0000] "GET /presentImages HTTP/1.1" 304 - "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 ::1 - - [26/May/2024:03:21:03 +0000] "GET /D:%C3%9EveloperNodejsssignmentsssignment03serverimages%C2%BAnner1.jpg HTTP/1.1" 404 208 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
 ::1 - - [26/May/2024:03:24:01 +0000] "GET /presentImages HTTP/1.1" 304 - "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+::1 - - [26/May/2024:12:30:53 +0000] "GET / HTTP/1.1" 404 139 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
