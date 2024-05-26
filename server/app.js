@@ -10,7 +10,12 @@ const path = require("path");
 const https = require("https");
 const helmet = require("helmet");
 
+// const Session = require("./models/session");
+
 require("dotenv").config();
+
+const authRoutes = require("./routes/auth");
+// const productRoutes = require("./routes/products");
 
 const mongodbUrl = process.env.MONGODB_URL;
 
@@ -61,6 +66,13 @@ app.use(
 app.use(helmet());
 app.use(compression());
 app.use(morgan("combined", { stream: accessLogStream }));
+
+app.use("/images", express.static("images"));
+
+// app.use("/images", express.static("images")); // Cần tạo thư mục images
+
+app.use(authRoutes);
+// app.use(productRoutes);
 
 mongoose
   .connect(mongodbUrl)

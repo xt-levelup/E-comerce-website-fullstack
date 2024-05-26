@@ -32,10 +32,22 @@ nav h2{
 nav .left{
     display:flex;
     gap:2em;
+    align-items:center;
 }
 nav .right{
     display:flex;
     gap:2em;
+    align-items:center;
+}
+nav button{
+    height:30px;
+    width:72px;
+    background-color:red;
+    color:rgb(166, 226, 166);
+    font-weight:bold;
+    border:none;
+    border-radius:3px;
+    cursor:pointer;
 }
 
 span {

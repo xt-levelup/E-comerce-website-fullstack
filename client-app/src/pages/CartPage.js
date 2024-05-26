@@ -1,9 +1,17 @@
 import { Helmet } from "react-helmet";
 import styles from "./CartPage.module.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+
+import { authSliceActions } from "../store/auth";
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const author = useSelector((state) => {
+    return state.authSlice.author;
+  });
 
   const goToShopping = () => {
     navigate("/shop");

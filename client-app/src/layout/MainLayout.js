@@ -1,8 +1,39 @@
 import { Outlet, NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 
 import styles from "./MainLayout.module.css";
+import { authSliceActions } from "../store/auth";
 
 const MainLayout = () => {
+  const dispatch = useDispatch();
+
+  const author = useSelector((state) => {
+    return state.authSlice.author;
+  });
+
+  const [emailName, setEmailName] = useState(null);
+
+  useEffect(() => {
+    dispatch(
+      authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("author:", author);
+    setEmailName(author && author.email.split("@")[0].slice(0, 6).trim());
+  }, [author]);
+
+  const logoutHandle = () => {
+    localStorage.removeItem("user");
+    dispatch(authSliceActions.authorUpdate(null));
+  };
+
+  useEffect(() => {
+    console.log("emailName:", emailName);
+  }, [emailName]);
+
   return (
     <div>
       <div>
@@ -25,15 +56,6 @@ const MainLayout = () => {
             >
               Shop
             </NavLink>
-
-            {/* <NavLink
-              to="/checkout"
-              className={({ isActive }) => {
-                return isActive ? styles.active : undefined;
-              }}
-            >
-              Checkout
-            </NavLink> */}
           </div>
           <div>
             <h2>BOUTIQUE</h2>
@@ -63,54 +85,64 @@ const MainLayout = () => {
                 Cart
               </span>
             </NavLink>
-            <NavLink
-              to="/login"
-              className={({ isActive }) => {
-                return isActive ? styles.active : undefined;
-              }}
-            >
-              <span className={styles.icon}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="w-6 h-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"
-                  />
-                </svg>
-                Login
-              </span>
-            </NavLink>
-            <NavLink
-              to="/register"
-              className={({ isActive }) => {
-                return isActive ? styles.active : undefined;
-              }}
-            >
-              <span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="w-6 h-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
-                  />
-                </svg>
-                Signup
-              </span>
-            </NavLink>
+            {!author && (
+              <NavLink
+                to="/login"
+                className={({ isActive }) => {
+                  return isActive ? styles.active : undefined;
+                }}
+              >
+                <span className={styles.icon}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"
+                    />
+                  </svg>
+                  Login
+                </span>
+              </NavLink>
+            )}
+            {!author && (
+              <NavLink
+                to="/register"
+                className={({ isActive }) => {
+                  return isActive ? styles.active : undefined;
+                }}
+              >
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
+                    />
+                  </svg>
+                  Signup
+                </span>
+              </NavLink>
+            )}
+            {author && <h3>{emailName}</h3>}
+            {author && (
+              <button type="button" onClick={logoutHandle}>
+                Logout
+              </button>
+            )}
           </div>
         </nav>
       </div>

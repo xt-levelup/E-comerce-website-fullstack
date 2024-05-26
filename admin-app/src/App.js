@@ -1,25 +1,97 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import { lazy, Suspense } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const MainLayout = lazy(() => {
+  return import("./layout/MainLayout.js");
+});
+const HomePage = lazy(() => {
+  return import("./pages/HomePage.js");
+});
+const ChatPage = lazy(() => {
+  return import("./pages/ChatPage.js");
+});
+const AddProductPage = lazy(() => {
+  return import("./pages/AddProductPage.js");
+});
+const LoginPage = lazy(() => {
+  return import("./pages/LoginPage.js");
+});
+const SignupPage = lazy(() => {
+  return import("./pages/SignupPage.js");
+});
+
+const App = () => {
+  const loading = <p style={{ textAlign: "center" }}>Loading page ...</p>;
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <Suspense fallback={loading}>
+          <MainLayout />
+        </Suspense>
+      ),
+      children: [
+        {
+          index: true,
+          element: (
+            <Suspense fallback={loading}>
+              <HomePage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "chat",
+          element: (
+            <Suspense fallback={loading}>
+              <ChatPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "add-product",
+          element: (
+            <Suspense fallback={loading}>
+              <AddProductPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "add-product/:productId",
+          element: (
+            <Suspense fallback={loading}>
+              <AddProductPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "login",
+          element: (
+            <Suspense fallback={loading}>
+              <LoginPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "signup",
+          element: (
+            <Suspense fallback={loading}>
+              <SignupPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "*",
+          element: <Navigate to="/" />,
+        },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
+};
 
 export default App;

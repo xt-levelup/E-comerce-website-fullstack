@@ -2,6 +2,9 @@ import { Helmet } from "react-helmet";
 import styles from "./HomePage.module.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
+import { authSliceActions } from "../store/auth";
 import iphone from "../images/product_1.png";
 import mac from "../images/product_2.png";
 import ipad from "../images/product_3.png";
@@ -11,8 +14,34 @@ import adminAvatar from "../images/avatar01.png";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // const productData = useSelector((state) => {
+  //   return state.fetchProductsSlice;
+  // });
+  const errorMessage = useSelector((state) => {
+    return state.authSlice.errorMessage;
+  });
 
   const [boxShow, setBoxShow] = useState(false);
+  // const [bannerImages, setBannerImages] = useState(null);
+  // const [bannerImg, setBannerImg] = useState(null);
+
+  useEffect(() => {
+    // dispatch(fetchProductsSliceActions());
+  }, []);
+
+  // useEffect(() => {
+  //   try {
+  //     getBannerImages();
+  //   } catch (err) {
+  //     dispatch(
+  //       authSliceActions.errorMessageUpdate(
+  //         "Err from catch server bannerImages!"
+  //       )
+  //     );
+  //   }
+  // }, []);
 
   const browseCollectionButton = () => {
     navigate("/shop");
@@ -39,9 +68,42 @@ const HomePage = () => {
     };
   }, []);
 
+  // const getBannerImages = async () => {
+  //   const urlServer = "http://localhost:5000/presentImages";
+  //   const response = await fetch(urlServer);
+  //   const data = await response.json();
+  //   if (!response.ok) {
+  //     dispatch(
+  //       authSliceActions.errorMessageUpdate(
+  //         data && data.message
+  //           ? data.message
+  //           : data && data.msg
+  //           ? data.msg
+  //           : "Cannot get banner images!"
+  //       )
+  //     );
+  //   } else {
+  //     dispatch(authSliceActions.errorMessageUpdate(null));
+  //     setBannerImages(data);
+  //     setBannerImg(data ? data.bannerImg : null);
+  //   }
+  // };
+
   useEffect(() => {
     console.log("boxShow:", boxShow);
   }, [boxShow]);
+  // useEffect(() => {
+  //   console.log("productData:", productData);
+  // }, [productData]);
+  useEffect(() => {
+    console.log("errorMessage:", errorMessage);
+  }, [errorMessage]);
+  // useEffect(() => {
+  //   console.log("bannerImages:", bannerImages);
+  // }, [bannerImages]);
+  // useEffect(() => {
+  //   console.log("bannerImg:", bannerImg);
+  // }, [bannerImg]);
 
   return (
     <div>
