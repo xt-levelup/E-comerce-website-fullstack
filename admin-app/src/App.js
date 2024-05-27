@@ -23,6 +23,9 @@ const LoginPage = lazy(() => {
 const SignupPage = lazy(() => {
   return import("./pages/SignupPage.js");
 });
+const ProductPage = lazy(() => {
+  return import("./pages/ProductPage.js");
+});
 
 const App = () => {
   const loading = <p style={{ textAlign: "center" }}>Loading page ...</p>;
@@ -48,6 +51,14 @@ const App = () => {
           element: (
             <Suspense fallback={loading}>
               <ChatPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "product",
+          element: (
+            <Suspense fallback={loading}>
+              <ProductPage />
             </Suspense>
           ),
         },

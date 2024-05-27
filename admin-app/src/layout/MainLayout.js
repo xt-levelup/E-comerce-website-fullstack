@@ -26,6 +26,14 @@ const MainLayout = () => {
               Chat Room
             </NavLink>
             <NavLink
+              to="/product"
+              className={({ isActive }) => {
+                return isActive ? styles.active : undefined;
+              }}
+            >
+              Product Page
+            </NavLink>
+            <NavLink
               to="/add-product"
               className={({ isActive }) => {
                 return isActive ? styles.active : undefined;
