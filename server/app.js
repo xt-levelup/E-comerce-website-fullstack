@@ -15,30 +15,10 @@ const helmet = require("helmet");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 // const productRoutes = require("./routes/products");
 
 const mongodbUrl = process.env.MONGODB_URL;
-
-const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "access.log"),
@@ -46,6 +26,30 @@ const accessLogStream = fs.createWriteStream(
 );
 
 const app = express();
+
+app.use("/images", express.static("images"));
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.use(
   cors({
@@ -60,18 +64,15 @@ app.use(
   multer({
     storage: fileStorage,
     fileFilter: fileFilter,
-  }).single("imageFile")
+  }).array("imageFiles", 5)
 );
 
 app.use(helmet());
 app.use(compression());
 app.use(morgan("combined", { stream: accessLogStream }));
 
-app.use("/images", express.static("images"));
-
-// app.use("/images", express.static("images")); // Cần tạo thư mục images
-
 app.use(authRoutes);
+app.use(adminRoutes);
 // app.use(productRoutes);
 
 mongoose
