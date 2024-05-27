@@ -53,9 +53,11 @@ route.post(
           return true;
         });
       }),
+
     body("password").custom(async (value, { req }) => {
       const userDoc = await User.findOne({ email: req.body.email });
       const doMatch = await bcrypt.compare(value, userDoc.password);
+      console.log("domatch:", doMatch);
       if (!doMatch) {
         throw new Error("Password is not correct!");
       }

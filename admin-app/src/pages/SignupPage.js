@@ -111,19 +111,36 @@ const SignupPage = () => {
           </p>
         )}
         <div>
-          <input type="text" placeholder="Full Name" onChange={nameHandle} />
-          <input type="email" placeholder="Email" onChange={emailHandle} />
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={nameHandle}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={emailHandle}
+          />
           <input
             type="password"
             placeholder="Password"
             onChange={passwordHandle}
+            value={password}
           />
           <input
             type="password"
             placeholder="Confirm Password"
+            value={confirmPassword}
             onChange={confirmPasswordHandle}
           />
-          <input type="number" placeholder="Phone" onChange={phoneHandle} />
+          <input
+            type="number"
+            placeholder="Phone"
+            value={phone}
+            onChange={phoneHandle}
+          />
         </div>
         <button type="button" onClick={signupHandle}>
           SIGN UP

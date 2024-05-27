@@ -5,6 +5,8 @@ const initValues = {
   name: "",
   phone: "",
   errorMessage: null,
+  auth: false,
+  localStorageData: null,
 };
 
 const authSlice = createSlice({
@@ -22,6 +24,12 @@ const authSlice = createSlice({
     },
     errorMessageUpdate(state, action) {
       state.errorMessage = action.payload;
+    },
+    authUpdate(state, action) {
+      state.auth = action.payload;
+    },
+    localStorageDataUpdate(state, action) {
+      state.localStorageData = action.payload;
     },
   },
 });
