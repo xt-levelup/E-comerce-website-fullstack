@@ -1,12 +1,14 @@
 import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import styles from "./ProductPage.module.css";
 import { fetchProductsSliceAction } from "../store/fetchProductsSlice";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const productData = useSelector((state) => {
     return state.fetchProductsSlice.productData;
@@ -31,6 +33,11 @@ const ProductPage = () => {
     });
     console.log("searchData:", searchData);
     setCurrentProductData(searchData);
+  };
+
+  const updateHandle = (productId) => {
+    console.log("productId:", productId);
+    navigate(`/add-product/${productId}`);
   };
 
   useEffect(() => {
@@ -81,7 +88,9 @@ const ProductPage = () => {
                   <p style={{ marginLeft: "-1px" }}>{product.category}</p>
                   <p style={{ marginLeft: "-1px" }} className={styles.edit}>
                     <button
+                      type="button"
                       style={{ backgroundColor: "green", color: "white" }}
+                      onClick={() => updateHandle(product._id)}
                     >
                       Update
                     </button>

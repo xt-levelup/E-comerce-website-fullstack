@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import styles from "./AddProductPage.module.css";
 import { authSliceActions } from "../store/authSlice";
+import { fetchProductsSliceAction } from "../store/fetchProductsSlice";
 
 const AddProductPage = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,9 @@ const AddProductPage = () => {
   });
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
+  });
+  const productData = useSelector((state) => {
+    return state.fetchProductsSlice.productData;
   });
 
   const [name, setName] = useState("");
@@ -36,6 +40,24 @@ const AddProductPage = () => {
       )
     );
   }, []);
+  useEffect(() => {
+    dispatch(fetchProductsSliceAction());
+  }, []);
+  useEffect(() => {
+    if (productId) {
+      const editData = productData.find((product) => {
+        return product._id.toString() === productId.toString();
+      });
+      console.log("editData:", editData);
+      if (editData) {
+        setName(editData.name);
+        setPrice(editData.price);
+        setCategory(editData.category);
+        setShortDesc(editData.short_desc);
+        setLongDesc(editData.long_desc);
+      }
+    }
+  }, [productData]);
 
   const nameHandle = (event) => {
     setName(event.target.value);
@@ -63,7 +85,13 @@ const AddProductPage = () => {
 
   const addProductHandle = async (event) => {
     event.preventDefault();
-    const urlServer = "http://localhost:5000/addProduct";
+    console.log("productId:", productId);
+    const urlServer = productId
+      ? "http://localhost:5000/editProduct"
+      : "http://localhost:5000/addProduct";
+
+    console.log("urlServer:", urlServer);
+
     const token = localStorageData && localStorageData.token;
     const userId = localStorageData && localStorageData.userId;
     const formData = new FormData();
@@ -74,6 +102,7 @@ const AddProductPage = () => {
     formData.append("shortDesc", shortDesc);
     formData.append("longDesc", longDesc);
     formData.append("userId", userId);
+    formData.append("productId", productId);
 
     if (images && images.length > 5) {
       dispatch(
@@ -132,6 +161,7 @@ const AddProductPage = () => {
       }
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
+      console.log("data edit || add:", data);
       navigate("/product");
     }
   };
@@ -176,13 +206,16 @@ const AddProductPage = () => {
   useEffect(() => {
     console.log("errorMessage", errorMessage);
   }, [errorMessage]);
+  useEffect(() => {
+    console.log("productData", productData);
+  }, [productData]);
 
   return (
     <div className={styles.contain}>
       <Helmet>
         <title>Add Product</title>
       </Helmet>
-      <h2>AddProductPage</h2>
+      <h2>{productId ? "Edit The Product" : "Add Product Page"}</h2>
       <form>
         {errorMessage && (
           <div

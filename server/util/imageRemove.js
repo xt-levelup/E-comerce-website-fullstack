@@ -1,12 +1,14 @@
 const fs = require("fs");
 
 const deleteFiles = (arrayPath) => {
-  for (let i = 0; i < arrayPath.length; i++) {
-    fs.unlink(arrayPath[i], (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+  if (arrayPath && arrayPath.length > 0) {
+    for (let i = 0; i < arrayPath.length; i++) {
+      fs.unlink(arrayPath[i], (err) => {
+        if (err) {
+          console.log("Error unlink:", err.message);
+        }
+      });
+    }
   }
 };
 
