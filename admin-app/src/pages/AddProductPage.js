@@ -74,10 +74,7 @@ const AddProductPage = () => {
   const longDescHandle = (event) => {
     setLongDesc(event.target.value);
   };
-  // const imagesHandle = (event) => {
-  //   // const uploadedImages = Array.from(event.target.files);
-  //   setImages(event.target.files[0]);
-  // };
+
   const imagesHandle = (event) => {
     const uploadedImages = Array.from(event.target.files);
     setImages(uploadedImages);

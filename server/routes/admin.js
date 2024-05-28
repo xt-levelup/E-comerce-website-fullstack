@@ -69,7 +69,7 @@ router.post(
 router.post(
   "/deleteProduct",
   authCheck.checkAdmin,
-  adminControllers.editProduct
+  adminControllers.deleteProduct
 );
 
 module.exports = router;

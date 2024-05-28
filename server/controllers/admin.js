@@ -144,5 +144,15 @@ exports.deleteProduct = (req, res, next) => {
   console.log("productId:", productId);
   console.log("authHeader:", authHeader);
 
-  res.status(201).json({ message: "Deleted the product!" });
+  Product.findByIdAndDelete(productId)
+    .then((result) => {
+      console.log("Result delete product:", result);
+      res.status(201).json({
+        message: "Deleted the product successfully!",
+      });
+    })
+    .catch((err) => {
+      console.log("err delete product:", err);
+      res.status(500).json({ message: err.message });
+    });
 };
