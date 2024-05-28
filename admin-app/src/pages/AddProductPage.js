@@ -267,7 +267,7 @@ const AddProductPage = () => {
           />
         </div>
         <div>
-          <label>Upload image (5 images)</label>
+          <label>Upload image (max 5 images)</label>
 
           <input
             type="file"
