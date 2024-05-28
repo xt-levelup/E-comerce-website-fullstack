@@ -20,12 +20,13 @@ const AddProductPage = () => {
     return state.authSlice.errorMessage;
   });
 
-  const [name, setName] = useState(null);
-  const [price, setPrice] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [shortDesc, setShortDesc] = useState(null);
-  const [longDesc, setLongDesc] = useState(null);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [shortDesc, setShortDesc] = useState("");
+  const [longDesc, setLongDesc] = useState("");
   const [images, setImages] = useState(null);
+  // const [imageUploadMaxError,setImageUploadMaxError]=useState(null);
   // const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -64,6 +65,7 @@ const AddProductPage = () => {
     event.preventDefault();
     const urlServer = "http://localhost:5000/addProduct";
     const token = localStorageData && localStorageData.token;
+    const userId = localStorageData && localStorageData.userId;
     const formData = new FormData();
     formData.append("id", productId ? productId : null);
     formData.append("name", name);
@@ -71,28 +73,42 @@ const AddProductPage = () => {
     formData.append("category", category);
     formData.append("shortDesc", shortDesc);
     formData.append("longDesc", longDesc);
-    // formData.append("imageFiles", images);
+    formData.append("userId", userId);
 
-    for (let i = 0; i < images.length; i++) {
-      console.log(`images${i}:`, images[i]);
-      formData.append("imageFiles", images[i]);
+    if (images && images.length > 5) {
+      dispatch(
+        authSliceActions.errorMessageUpdate("Please choose max to 5 images!")
+      );
+      return;
+    }
+
+    if (images && images.length) {
+      for (let i = 0; i < images.length; i++) {
+        console.log(`images${i}:`, images[i]);
+        formData.append("imageFiles", images[i]);
+      }
     }
 
     const response = await fetch(urlServer, {
       method: "POST",
       headers: {
-        Authorization: "Bearer" + token,
+        Authorization: "Bearer " + token,
       },
       body: formData,
     });
     const data = await response.json();
     if (!response.ok) {
-      if (data && data.message === "Wrong token!") {
+      if (
+        (data && data.message === "Wrong token!") ||
+        (data && data.message === "jwt expired") ||
+        (data && data.message === "jwt malformed")
+      ) {
         localStorage.removeItem("userData");
         dispatch(authSliceActions.localStorageDataUpdate(null));
+        dispatch(authSliceActions.authUpdate(false));
         dispatch(
           authSliceActions.errorMessageUpdate(
-            "Please login again! Your login is expired!"
+            "Please login again! Your login is expired or something wrong!"
           )
         );
       } else if (data && data.message === "Not authorized!") {
@@ -110,7 +126,7 @@ const AddProductPage = () => {
               ? data.message
               : data && data.msg
               ? data.msg
-              : "Cannot add product now! Please trying later!"
+              : "Cannot add product now! Maybe you login again or Please trying later!"
           )
         );
       }
@@ -118,6 +134,10 @@ const AddProductPage = () => {
       dispatch(authSliceActions.errorMessageUpdate(null));
       navigate("/product");
     }
+  };
+
+  const closeErrorMessage = () => {
+    dispatch(authSliceActions.errorMessageUpdate(null));
   };
 
   useEffect(() => {
@@ -153,6 +173,9 @@ const AddProductPage = () => {
   useEffect(() => {
     console.log("productId", productId);
   }, [productId]);
+  useEffect(() => {
+    console.log("errorMessage", errorMessage);
+  }, [errorMessage]);
 
   return (
     <div className={styles.contain}>
@@ -161,6 +184,42 @@ const AddProductPage = () => {
       </Helmet>
       <h2>AddProductPage</h2>
       <form>
+        {errorMessage && (
+          <div
+            style={{
+              position: "fixed",
+              transform: "translate(-50%,-50%)",
+              width: "50%",
+              // height: "20%",
+              backgroundColor: "rgb(190 190 190)",
+              top: "50%",
+              left: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "12px",
+              gap: "1em",
+              padding: "1em",
+            }}
+          >
+            <p
+              style={{
+                color: "red",
+                textAlign: "center",
+                border: "none",
+                fontWeight: "bold",
+              }}
+            >
+              {errorMessage}
+            </p>
+            <button
+              style={{ height: "36px", width: "36px" }}
+              onClick={closeErrorMessage}
+            >
+              X
+            </button>
+          </div>
+        )}
         <div>
           <label>Product Name</label>
           <input

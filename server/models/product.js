@@ -19,8 +19,8 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
-  imageUrl: {
-    type: String,
+  imageUrls: {
+    type: Array,
     required: true,
   },
   category: {
@@ -28,8 +28,7 @@ const productSchema = new Schema({
     required: true,
   },
   userId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
     required: true,
   },
 });
