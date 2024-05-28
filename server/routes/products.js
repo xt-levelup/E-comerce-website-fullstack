@@ -1,7 +1,7 @@
-// const express = require("express");
-// const router = express.Router();
-// const productControllers = require("../controllers/products");
+const express = require("express");
+const router = express.Router();
+const productControllers = require("../controllers/products");
 
-// router.get("/presentImages", productControllers.presentImages);
+router.get("/getProducts", productControllers.getProducts);
 
-// module.exports = router;
+module.exports = router;

@@ -1,8 +1,24 @@
 import { Helmet } from "react-helmet";
+import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 
 import styles from "./ProductPage.module.css";
+import { fetchProductsSliceAction } from "../store/fetchProductsSlice";
 
 const ProductPage = () => {
+  const dispatch = useDispatch();
+
+  const productData = useSelector((state) => {
+    return state.fetchProductsSlice.productData;
+  });
+  useEffect(() => {
+    dispatch(fetchProductsSliceAction());
+  }, []);
+
+  useEffect(() => {
+    console.log("productData:", productData);
+  }, [productData]);
+
   return (
     <div className={styles.contain}>
       <Helmet>

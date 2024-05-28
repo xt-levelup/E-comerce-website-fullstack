@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const deleteImageFiles = require("../util/imageRemove");
 
 exports.checkToken = (req, res, next) => {
   const getAuth = req.get("Authorization");
@@ -48,6 +49,11 @@ exports.checkAdmin = (req, res, next) => {
   } catch (err) {
     console.log("err decoded token:", err);
     console.log("err.message decoded token:", err.message);
+    deleteImageFiles.deleteFiles(
+      req.files.map((image) => {
+        return image.path;
+      })
+    );
     res.status(500).json({ message: err.message });
     return;
   }

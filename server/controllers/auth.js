@@ -75,8 +75,8 @@ exports.postLogin = (req, res, next) => {
           email: user.email,
           userId: user._id.toString(),
         },
-        "supersecretxt",
-        { expiresIn: "5m" }
+        process.env.SECRET_JWT,
+        { expiresIn: "1h" }
       );
       res.status(200).json({
         token: token,

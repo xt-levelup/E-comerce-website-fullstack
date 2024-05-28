@@ -15,10 +15,6 @@ exports.addProduct = (req, res, next) => {
   const userId = req.body.userId;
   const errors = validationResult(req);
 
-  // const imageFilePaths = imageFiles.map((file) => {
-  //   return file.path;
-  // });
-
   console.log("name:", name);
   console.log("price:", price);
   console.log("category:", category);
