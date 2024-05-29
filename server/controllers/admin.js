@@ -200,3 +200,63 @@ exports.getChats = (req, res, next) => {
       });
     });
 };
+
+exports.adminAddMessage = (req, res, next) => {
+  const currentMessage = req.body.currentMessage;
+  const userIdChat = req.body.userIdChat;
+  const errors = validationResult(req);
+
+  console.log("currentMessage:", currentMessage);
+  console.log("userIdChat:", userIdChat);
+  console.log("errors:", errors);
+
+  if (!errors.isEmpty()) {
+    res.status(422).json(errors.array()[0]);
+    return;
+  }
+
+  if (!currentMessage || !userIdChat) {
+    res.status(403).json({
+      message: "Message must be not empty and clearly user to send!",
+    });
+    return;
+  }
+
+  Message.findOne({ userId: userIdChat })
+    .then((sessionMessage) => {
+      if (!sessionMessage) {
+        res.status(404).json({
+          message: "This user closed this chat!",
+        });
+      } else {
+        console.log("sessionMessage:", sessionMessage);
+        User.findById(req.userId)
+          .then((user) => {
+            sessionMessage.messages.push({
+              currentMessage: currentMessage,
+              date: new Date(),
+              userChat: req.userId,
+              userChatType: user.userType,
+            });
+            return sessionMessage.save();
+          })
+          .then((sessionMessage) => {
+            console.log("sessionMessage res:", sessionMessage);
+            res.status(201).json(sessionMessage);
+          })
+
+          .catch((err) => {
+            connsole.log("err User.findById() in AddMessage else:", err);
+            res.status(500).json({
+              message: err.message,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log("err Message.findOne:", err);
+      res.status(500).json({
+        message: err.message,
+      });
+    });
+};

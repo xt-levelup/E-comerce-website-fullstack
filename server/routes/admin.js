@@ -75,4 +75,14 @@ router.post("/getUsers", authCheck.checkCounselor, adminControllers.getUsers);
 
 router.post("/getChats", authCheck.checkCounselor, adminControllers.getChats);
 
+router.post(
+  "/adminAddMessage",
+  authCheck.checkCounselor,
+  [
+    body("currentMessage", "Chat not be empty!").isLength({ min: 1 }),
+    body("userIdChat", "Who are you want to send message?"),
+  ],
+  adminControllers.adminAddMessage
+);
+
 module.exports = router;
