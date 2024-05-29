@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const sessionSchema = new Schema({
-  adminId: {
+  userId: {
     type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   messages: [
@@ -13,12 +14,14 @@ const sessionSchema = new Schema({
         type: String,
       },
       date: { type: Date },
-      userId: {
+      userChat: {
         type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
       },
     },
   ],
-  expireAt: { type: Date, default: Date.now, expires: 3600 }, // 3600 giây = 60 phút
+  // expireAt: { type: Date, default: Date.now, expires: 3600 }, // 3600 giây = 60 phút
 });
 
 module.exports = mongoose.model("MessageSessions", sessionSchema);

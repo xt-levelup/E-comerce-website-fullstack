@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 const Product = require("../models/product");
 const deleteImageFiles = require("../util/imageRemove");
 const User = require("../models/user");
+const Order = require("../models/order");
 
 exports.addProduct = (req, res, next) => {
   const name = req.body.name;
@@ -154,5 +155,34 @@ exports.deleteProduct = (req, res, next) => {
     .catch((err) => {
       console.log("err delete product:", err);
       res.status(500).json({ message: err.message });
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  User.find()
+    .then((users) => {
+      // res.status(200).json(users);
+      return users;
+    })
+    .then((users) => {
+      Order.find()
+        .then((orders) => {
+          res.status(200).json({
+            users: users,
+            orders: orders,
+          });
+        })
+        .catch((err) => {
+          console.log("err Order.find:", err);
+          res.status(500).json({
+            message: err.message,
+          });
+        });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: err.message,
+      });
+      console.log("Err getUsers:", err);
     });
 };

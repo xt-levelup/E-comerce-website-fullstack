@@ -10,7 +10,7 @@ const ChatPage = () => {
       </Helmet>
       <div>
         <h2>ChatPage</h2>
-        <p>App / Chat</p>
+        <p>Apps / Chat</p>
       </div>
       <div className={styles.action}>
         <div className={styles["list-users"]}>

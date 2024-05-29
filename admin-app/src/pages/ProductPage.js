@@ -35,6 +35,9 @@ const ProductPage = () => {
   useEffect(() => {
     setCurrentProductData(productData);
   }, [productData]);
+  useEffect(() => {
+    dispatch(authSliceActions.errorMessageUpdate(null));
+  }, []);
 
   const searchInputHandle = (event) => {
     setSearchInput(event.target.value);
@@ -122,6 +125,14 @@ const ProductPage = () => {
     dispatch(authSliceActions.errorMessageUpdate(null));
   };
 
+  const backgroundColorProduct = (index) => {
+    if (index % 2 === 0) {
+      console.log("index:", index);
+      console.log("index%2:", index % 2);
+      return "rgb(240 240 240)";
+    }
+  };
+
   useEffect(() => {
     console.log("productData:", productData);
   }, [productData]);
@@ -159,9 +170,13 @@ const ProductPage = () => {
         <div className={styles.detail}>
           {currentProductData &&
             currentProductData.length > 0 &&
-            currentProductData.map((product) => {
+            currentProductData.map((product, index) => {
               return (
-                <div className={styles.product}>
+                <div
+                  className={styles.product}
+                  style={{ backgroundColor: backgroundColorProduct(index) }}
+                  key={product._id}
+                >
                   <p>{product._id}</p>
                   <p style={{ marginLeft: "-1px" }}>{product.name}</p>
                   <p style={{ marginLeft: "-1px" }}>{product.price}</p>

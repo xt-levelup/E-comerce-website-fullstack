@@ -33,6 +33,10 @@ const LoginPage = () => {
 
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    dispatch(authSliceActions.errorMessageUpdate(null));
+  }, []);
+
   const loginHandle = async () => {
     const urlServer = "http://localhost:5000/login";
     const response = await fetch(urlServer, {

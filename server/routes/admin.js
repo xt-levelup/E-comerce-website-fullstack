@@ -71,5 +71,6 @@ router.post(
   authCheck.checkAdmin,
   adminControllers.deleteProduct
 );
+router.post("/getUsers", authCheck.checkCounselor, adminControllers.getUsers);
 
 module.exports = router;

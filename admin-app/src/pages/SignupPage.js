@@ -26,6 +26,10 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  useEffect(() => {
+    dispatch(authSliceActions.errorMessageUpdate(null));
+  }, []);
+
   const emailHandle = (event) => {
     dispatch(authSliceActions.emailUpdate(event.target.value));
   };
