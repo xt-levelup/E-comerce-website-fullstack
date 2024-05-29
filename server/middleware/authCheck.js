@@ -100,9 +100,10 @@ exports.checkCounselor = (req, res, next) => {
     console.log("err decoded token:", err);
     console.log("err.message decoded token:", err.message);
     deleteImageFiles.deleteFiles(
-      req.files.map((image) => {
-        return image.path;
-      })
+      req.files &&
+        req.files.map((image) => {
+          return image.path;
+        })
     );
     res.status(500).json({ message: err.message });
     return;

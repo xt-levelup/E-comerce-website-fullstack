@@ -4,6 +4,7 @@ const Product = require("../models/product");
 const deleteImageFiles = require("../util/imageRemove");
 const User = require("../models/user");
 const Order = require("../models/order");
+const Message = require("../models/messageSession");
 
 exports.addProduct = (req, res, next) => {
   const name = req.body.name;
@@ -184,5 +185,18 @@ exports.getUsers = (req, res, next) => {
         message: err.message,
       });
       console.log("Err getUsers:", err);
+    });
+};
+
+exports.getChats = (req, res, next) => {
+  Message.find()
+    .then((messageSessions) => {
+      res.status(200).json(messageSessions);
+    })
+    .catch((err) => {
+      console.log("err Message.find admin:", err);
+      res.status(500).json({
+        message: err.message,
+      });
     });
 };

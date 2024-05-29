@@ -17,6 +17,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const productRoutes = require("./routes/products");
+const clientRoutes = require("./routes/client");
 
 const mongodbUrl = process.env.MONGODB_URL;
 
@@ -74,6 +75,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(authRoutes);
 app.use(adminRoutes);
 app.use(productRoutes);
+app.use(clientRoutes);
 
 mongoose
   .connect(mongodbUrl)

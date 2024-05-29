@@ -10,13 +10,17 @@ const sessionSchema = new Schema({
   },
   messages: [
     {
-      message: {
+      currentMessage: {
         type: String,
       },
       date: { type: Date },
       userChat: {
         type: Schema.Types.ObjectId,
         ref: "User",
+        required: true,
+      },
+      userChatType: {
+        type: String,
         required: true,
       },
     },

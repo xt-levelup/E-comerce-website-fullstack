@@ -29,6 +29,11 @@ const RegisterPage = () => {
   });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(authSliceActions.errorMessageUpdate(null));
+  }, []);
+
   const clickHandle = () => {
     navigate("/login");
   };

@@ -19,8 +19,13 @@ const HomePage = () => {
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
+  const author = useSelector((state) => {
+    return state.authSlice.author;
+  });
 
   const [boxShow, setBoxShow] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [messageData, setMessageData] = useState(null);
 
   const browseCollectionButton = () => {
     navigate("/shop");
@@ -48,12 +53,86 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    dispatch(
+      authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
+    );
+  }, []);
+
+  const currentMessageHandle = (event) => {
+    setCurrentMessage(event.target.value);
+  };
+
+  const sendMessageHandle = async () => {
+    const urlServer = "http://localhost:5000/addMessage";
+    const token = author && author.token;
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        currentMessage: currentMessage,
+      }),
+    });
+    const data = await response.json();
+    console.log("data sendMessageHandle:", data);
+    if (!response.ok) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot send message now! Please login then try again later!"
+        )
+      );
+      setMessageData(null);
+      localStorage.removeItem("user");
+      dispatch(authSliceActions.authorUpdate(null));
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      setMessageData(data);
+      setCurrentMessage("");
+    }
+  };
+
+  const chatStyleHandle = (userChatType) => {
+    if (userChatType === "normal") {
+      console.log("normal");
+      return {
+        backgroundColor: "blue",
+        color: "white",
+        textAlign: "right",
+        padding: "1em",
+      };
+    } else {
+      console.log("admin");
+      return {
+        backgroundColor: "rgb(240 240 240)",
+        color: "black",
+        textAlign: "left",
+        padding: "1em",
+      };
+    }
+  };
+
+  useEffect(() => {
     console.log("boxShow:", boxShow);
   }, [boxShow]);
 
   useEffect(() => {
     console.log("errorMessage:", errorMessage);
   }, [errorMessage]);
+  useEffect(() => {
+    console.log("currentMessage:", currentMessage);
+  }, [currentMessage]);
+  useEffect(() => {
+    console.log("messageData:", messageData);
+  }, [messageData]);
+  useEffect(() => {
+    console.log("author:", author);
+  }, [author]);
 
   return (
     <div>
@@ -155,22 +234,67 @@ const HomePage = () => {
               <h3>Customer Support</h3>
               <button>Let's Chat App</button>
             </div>
-            <div className={styles.chatting}>
-              <div className={styles.client}>
-                <p>Xin chao</p>
-                <p>Lam the nao de xem san pham</p>
+            {!errorMessage && (
+              <div className={styles.chatting}>
+                {messageData &&
+                  messageData.messages.length > 0 &&
+                  messageData.messages.map((message) => {
+                    return (
+                      <div
+                        key={message.date}
+                        // style={chatStyleHandle(message.userChatType)}
+                        className={
+                          message.userChatType === "normal"
+                            ? styles.client
+                            : styles.admin
+                        }
+                      >
+                        <p>{message.currentMessage}</p>
+                      </div>
+                    );
+                  })}
+                {/* <div className={styles.client}>
+                  <p>Xin chao</p>
+                  <p>Lam the nao de xem san pham</p>
+                </div>
+                <div className={styles.admin}>
+                  <p>Chao ban</p>
+                  <p>Ban co the vao muc Shop</p>
+                </div> */}
               </div>
-              <div className={styles.admin}>
-                <p>Chao ban</p>
-                <p>Ban co the vao muc Shop</p>
+            )}
+            {errorMessage && (
+              <div
+                className={styles.chatting}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "1em",
+                }}
+              >
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "red",
+                    fontWeight: "600",
+                  }}
+                >
+                  {errorMessage}
+                </p>
+                <p>Press ESC to exit this chat box and try again later!</p>
               </div>
-            </div>
+            )}
             <div className={styles["chat-input"]}>
               <img
                 src={adminAvatar}
                 style={{ width: "36px", height: "36px", marginLeft: "1em" }}
               />
-              <input type="text" />
+              <input
+                type="text"
+                value={currentMessage}
+                onChange={currentMessageHandle}
+              />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -202,6 +326,7 @@ const HomePage = () => {
                 viewBox="0 0 48 48"
                 // fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={sendMessageHandle}
               >
                 <path
                   d="M41.4193 7.30899C41.4193 7.30899 45.3046 5.79399 44.9808 9.47328C44.8729 10.9883 43.9016 16.2908 43.1461 22.0262L40.5559 39.0159C40.5559 39.0159 40.3401 41.5048 38.3974 41.9377C36.4547 42.3705 33.5408 40.4227 33.0011 39.9898C32.5694 39.6652 24.9068 34.7955 22.2086 32.4148C21.4531 31.7655 20.5897 30.4669 22.3165 28.9519L33.6487 18.1305C34.9438 16.8319 36.2389 13.8019 30.8426 17.4812L15.7331 27.7616C15.7331 27.7616 14.0063 28.8437 10.7686 27.8698L3.75342 25.7055C3.75342 25.7055 1.16321 24.0823 5.58815 22.459C16.3807 17.3729 29.6555 12.1786 41.4193 7.30899Z"

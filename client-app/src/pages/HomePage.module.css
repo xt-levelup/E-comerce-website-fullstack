@@ -320,7 +320,7 @@
 .client p{
     background-color: rgb(100 100 200);
         color: white;
-        padding:3px;
+        padding:3px 6px;
         border-radius:3px;
 }
 .admin{
