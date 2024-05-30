@@ -11,6 +11,7 @@ router.post(
 
   clientControllers.getChatDataClient
 );
+router.post("/deleteMessageSession", clientControllers.deleteMessageSession);
 // router.post(
 //   "/getChatDataClient",
 //   authCheck.checkToken,

@@ -318,6 +318,7 @@
         flex-direction: column;
         align-items: flex-end;
         gap:1em;
+        /* justify-content:center; */
 }
 .client p{
     background-color: rgb(100 100 200);
@@ -330,12 +331,15 @@
         flex-direction: column;
         align-items: flex-start;
         gap:1em;
+        justify-content:center;
+        /* border:1px solid green; */
 }
 .admin p{
     background-color: rgb(234, 231, 231);
         color: black;
         padding:3px;
         border-radius:3px;
+        display:inline;
 }
 
 .chat-input{
@@ -351,6 +355,12 @@
     background-color:rgb(234, 231, 231);
     margin-bottom:-1em;
     border-radius:0 0 12px 12px;
+}
+
+.chat-input form{
+    display:flex;
+    align-items:center;
+    gap:1em;
 }
 .chat-input svg{
     width:24px;

@@ -100,3 +100,33 @@ exports.addMessage = (req, res, next) => {
       });
     });
 };
+
+exports.deleteMessageSession = (req, res, next) => {
+  const clientIdChat = req.body.clientMessageId;
+
+  console.log("clientIdChat:", clientIdChat);
+
+  if (!clientIdChat) {
+    res.status(403).json({
+      message: "Cannot find this id!",
+    });
+    return;
+  }
+
+  Message.findOneAndDelete({ userId: clientIdChat })
+    .then((result) => {
+      io.getIo().emit("posts", {
+        action: "deleteMessageSession",
+        theSession: result,
+      });
+      res.status(201).json({
+        message: "Delete the message session complete!",
+      });
+    })
+    .catch((err) => {
+      console.log("err Message.findOne deleteMessageSession:", err);
+      res.status(500).json({
+        message: "Something went wrong!",
+      });
+    });
+};
