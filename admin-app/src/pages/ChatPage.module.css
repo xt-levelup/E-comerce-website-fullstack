@@ -62,7 +62,7 @@
     justify-content:flex-end;
     /* align-items:center; */
 }
-.message-content-client{
+.message-content-admin{
     display:flex;
     /* background-color:blueviolet; */
     /* color:white; */
@@ -71,21 +71,21 @@
     
     /* padding:3px; */
 }
-.message-content-client p{
+.message-content-admin p{
     background-color:blueviolet;
     color:white;
     display:inline;
     padding:3px 6px;
     border-radius:3px;
 }
-.message-content-admin{
+.message-content-client{
     display:flex;
     /* background-color:rgb(220 220 220); */
     /* color:darkblue; */
     justify-content: flex-start;
     align-items:center;
 }
-.message-content-admin p{
+.message-content-client p{
     background-color:rgb(250 250 250);
     color:blueviolet;
     display:inline;

@@ -304,11 +304,13 @@
 }
 
 .chatting{
-    display:flex;
+    display:flex;    
     flex-direction:column;
     gap:1em;
     height:80%;
     margin:1em 0;
+    justify-content:flex-end;
+    overflow:auto;
 }
 
 .client{

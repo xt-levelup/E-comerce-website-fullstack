@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import openSocket from "socket.io-client";
 
 import styles from "./ChatPage.module.css";
 import { authSliceActions } from "../store/authSlice";
@@ -20,6 +21,7 @@ const ChatPage = () => {
   const [userIdClick, setUserIdClick] = useState(null);
   const [currentMessage, setCurrentMessagge] = useState("");
   const [userIdChat, setUserIdChat] = useState(null);
+  const [count, setCount] = useState(1);
 
   useEffect(() => {
     dispatch(
@@ -31,6 +33,34 @@ const ChatPage = () => {
 
   useEffect(() => {
     dispatch(authSliceActions.errorMessageUpdate(null));
+  }, []);
+
+  // useEffect(() => {
+  //   const socket = openSocket("http://localhost:5000");
+  //   socket.on("posts", (data) => {
+  //     if (data.action === "addMessageAdmin") {
+  //       console.log(
+  //         `socket ${
+  //           JSON.parse(localStorage.getItem("userData")).email
+  //         } connected: ${currentMessage}`
+  //       );
+  //       getChats();
+  //     }
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    const socket = openSocket("http://localhost:5000");
+    socket.on("adminPosts", (data) => {
+      if (data.action === "adminAddMessage") {
+        console.log(
+          `socket ${
+            JSON.parse(localStorage.getItem("userData")).email
+          } connected!: ${count}`
+        );
+        getChats();
+      }
+    });
   }, []);
 
   const currentMessageHandle = (event) => {
@@ -46,12 +76,19 @@ const ChatPage = () => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
+      body: JSON.stringify({
+        userId: localStorageData && localStorageData.userId,
+      }),
     });
     const data = await response.json();
+    console.log("data getChats:", data);
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
-          data && data.message
+          (data && data.message === "jwt malformed") ||
+            (data && data.message === "jwt expired")
+            ? "Login again to access data!"
+            : data && data.message
             ? data.message
             : data && data.msg
             ? data.msg
@@ -64,6 +101,14 @@ const ChatPage = () => {
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setChatData(data);
+      const messages =
+        userIdClick &&
+        data &&
+        data.find((chat) => {
+          return chat.userId === userIdClick;
+        }).messages;
+      setChatContent(messages);
+      return data;
     }
   };
 
@@ -75,11 +120,12 @@ const ChatPage = () => {
     }
   }, []);
 
-  const userIdHandle = (userId) => {
+  const userIdHandle = async (userId) => {
+    const newChatData = await getChats();
     const messages =
-      chatData &&
-      chatData.length > 0 &&
-      chatData.find((chat) => {
+      newChatData &&
+      newChatData.length > 0 &&
+      newChatData.find((chat) => {
         return chat.userId === userId;
       }).messages;
     setChatContent(messages);
@@ -99,6 +145,7 @@ const ChatPage = () => {
       body: JSON.stringify({
         userIdChat: userIdChat,
         currentMessage: currentMessage,
+        userId: localStorageData && localStorageData.userId,
       }),
     });
     const data = await response.json();
@@ -126,6 +173,7 @@ const ChatPage = () => {
       dispatch(authSliceActions.errorMessageUpdate(null));
       getChats();
       setCurrentMessagge("");
+      setCount(count + 1);
     }
   };
 
@@ -133,24 +181,24 @@ const ChatPage = () => {
     dispatch(authSliceActions.errorMessageUpdate(null));
   };
 
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("localStorageData:", localStorageData);
-  }, [localStorageData]);
-  useEffect(() => {
-    console.log("chatData:", chatData);
-  }, [chatData]);
+  // useEffect(() => {
+  //   console.log("errorMessage:", errorMessage);
+  // }, [errorMessage]);
+  // useEffect(() => {
+  //   console.log("localStorageData:", localStorageData);
+  // }, [localStorageData]);
+  // useEffect(() => {
+  //   console.log("chatData:", chatData);
+  // }, [chatData]);
   useEffect(() => {
     console.log("chatContent:", chatContent);
   }, [chatContent]);
-  useEffect(() => {
-    console.log("currentMessage:", currentMessage);
-  }, [currentMessage]);
-  useEffect(() => {
-    console.log("userIdChat:", userIdChat);
-  }, [userIdChat]);
+  // useEffect(() => {
+  //   console.log("currentMessage:", currentMessage);
+  // }, [currentMessage]);
+  // useEffect(() => {
+  //   console.log("userIdChat:", userIdChat);
+  // }, [userIdChat]);
 
   return (
     <div className={styles.contain}>

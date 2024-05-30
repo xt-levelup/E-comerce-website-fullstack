@@ -9,7 +9,11 @@ export const fetchProductsSliceAction = createAsyncThunk(
       const data = await response.json();
       if (!response.ok) {
         throw new Error(
-          data && data.message ? data.message : "Cannot get products now!"
+          data && data.message === "jwt malformed"
+            ? "Login to access data!"
+            : data && data.message
+            ? data.message
+            : "Cannot get products now!"
         );
       } else {
         return data;

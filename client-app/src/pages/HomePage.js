@@ -3,6 +3,8 @@ import styles from "./HomePage.module.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import openSocket from "socket.io-client";
+
 import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/auth";
 import iphone from "../images/product_1.png";
@@ -26,6 +28,8 @@ const HomePage = () => {
   const [boxShow, setBoxShow] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageData, setMessageData] = useState(null);
+  const [count, setCount] = useState(1);
+  const [userId, setUserId] = useState(null);
 
   const browseCollectionButton = () => {
     navigate("/shop");
@@ -46,6 +50,20 @@ const HomePage = () => {
   };
 
   useEffect(() => {
+    const socket = openSocket("http://localhost:5000");
+    socket.on("posts", (data) => {
+      if (data.action === "addMessage") {
+        console.log(
+          `socket ${
+            JSON.parse(localStorage.getItem("user")).email
+          } connected!: ${count}`
+        );
+        getChatDataClient();
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     window.addEventListener("keydown", boxShowToFalse);
     return () => {
       window.removeEventListener("keydown", boxShowToFalse);
@@ -56,14 +74,58 @@ const HomePage = () => {
     dispatch(
       authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
     );
+    setUserId(JSON.parse(localStorage.getItem("user")).userId);
+  }, []);
+
+  useEffect(() => {
+    try {
+      getChatDataClient();
+    } catch (err) {
+      dispatch(authSliceActions.errorMessageUpdate(err.message));
+    }
   }, []);
 
   const currentMessageHandle = (event) => {
     setCurrentMessage(event.target.value);
   };
 
+  const getChatDataClient = async () => {
+    const urlServer = "http://localhost:5000/getChatDataClient";
+    const token = author && author.token;
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        userId: JSON.parse(localStorage.getItem("user")).userId,
+      }),
+    });
+    const data = await response.json();
+    console.log("data getChatDataClient:", data);
+    if (!response.ok) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot get chat data now! Please login then try again later!"
+        )
+      );
+      setMessageData(null);
+      // localStorage.removeItem("user");
+      // dispatch(authSliceActions.authorUpdate(null));
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      setMessageData(data);
+    }
+  };
+
   const sendMessageHandle = async () => {
     const urlServer = "http://localhost:5000/addMessage";
+
     const token = author && author.token;
     const response = await fetch(urlServer, {
       method: "POST",
@@ -73,10 +135,11 @@ const HomePage = () => {
       },
       body: JSON.stringify({
         currentMessage: currentMessage,
+        userId: userId,
       }),
     });
     const data = await response.json();
-    console.log("data sendMessageHandle:", data);
+    // console.log("data sendMessageHandle:", data);
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
@@ -94,45 +157,26 @@ const HomePage = () => {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setMessageData(data);
       setCurrentMessage("");
+      setCount(count + 1);
     }
   };
 
-  const chatStyleHandle = (userChatType) => {
-    if (userChatType === "normal") {
-      console.log("normal");
-      return {
-        backgroundColor: "blue",
-        color: "white",
-        textAlign: "right",
-        padding: "1em",
-      };
-    } else {
-      console.log("admin");
-      return {
-        backgroundColor: "rgb(240 240 240)",
-        color: "black",
-        textAlign: "left",
-        padding: "1em",
-      };
-    }
-  };
+  // useEffect(() => {
+  //   console.log("boxShow:", boxShow);
+  // }, [boxShow]);
 
-  useEffect(() => {
-    console.log("boxShow:", boxShow);
-  }, [boxShow]);
-
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("currentMessage:", currentMessage);
-  }, [currentMessage]);
-  useEffect(() => {
-    console.log("messageData:", messageData);
-  }, [messageData]);
-  useEffect(() => {
-    console.log("author:", author);
-  }, [author]);
+  // useEffect(() => {
+  //   console.log("errorMessage:", errorMessage);
+  // }, [errorMessage]);
+  // useEffect(() => {
+  //   console.log("currentMessage:", currentMessage);
+  // }, [currentMessage]);
+  // useEffect(() => {
+  //   console.log("messageData:", messageData);
+  // }, [messageData]);
+  // useEffect(() => {
+  //   console.log("author:", author);
+  // }, [author]);
 
   return (
     <div>
@@ -253,14 +297,6 @@ const HomePage = () => {
                       </div>
                     );
                   })}
-                {/* <div className={styles.client}>
-                  <p>Xin chao</p>
-                  <p>Lam the nao de xem san pham</p>
-                </div>
-                <div className={styles.admin}>
-                  <p>Chao ban</p>
-                  <p>Ban co the vao muc Shop</p>
-                </div> */}
               </div>
             )}
             {errorMessage && (

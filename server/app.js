@@ -80,8 +80,14 @@ app.use(clientRoutes);
 mongoose
   .connect(mongodbUrl)
   .then((result) => {
-    console.log("server connected!");
-    app.listen(5000);
+    const server = app.listen(process.env.PORT || 5000);
+    const io = require("./socket").init(server);
+    io.on("connection", (socket) => {
+      console.log("Client connected!");
+    });
+    io.on("connect_error", (err) => {
+      console.log("err connect_error:", err);
+    });
   })
   .catch((err) => {
     console.log("mongoose connect err:", err);

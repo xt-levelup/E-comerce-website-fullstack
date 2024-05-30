@@ -38,7 +38,10 @@ const HomePage = () => {
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
-          data && data.message
+          (data && data.message === "jwt malformed") ||
+            (data && data.message === "jwt expired")
+            ? "Login again to access data!"
+            : data && data.message
             ? data.message
             : data && data.msg
             ? data.msg

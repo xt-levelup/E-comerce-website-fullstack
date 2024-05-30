@@ -5,6 +5,7 @@ const deleteImageFiles = require("../util/imageRemove");
 const User = require("../models/user");
 const Order = require("../models/order");
 const Message = require("../models/messageSession");
+const io = require("../socket");
 
 exports.addProduct = (req, res, next) => {
   const name = req.body.name;
@@ -204,10 +205,13 @@ exports.getChats = (req, res, next) => {
 exports.adminAddMessage = (req, res, next) => {
   const currentMessage = req.body.currentMessage;
   const userIdChat = req.body.userIdChat;
+  const userId = req.body.userId;
   const errors = validationResult(req);
 
   console.log("currentMessage:", currentMessage);
   console.log("userIdChat:", userIdChat);
+  console.log("userId:", userId);
+  // console.log("userId:", userId);
   console.log("errors:", errors);
 
   if (!errors.isEmpty()) {
@@ -229,27 +233,28 @@ exports.adminAddMessage = (req, res, next) => {
           message: "This user closed this chat!",
         });
       } else {
-        console.log("sessionMessage:", sessionMessage);
-        User.findById(req.userId)
+        // console.log("sessionMessage:", sessionMessage);
+        User.findById(userId)
           .then((user) => {
             sessionMessage.messages.push({
               currentMessage: currentMessage,
               date: new Date(),
-              userChat: req.userId,
+              userChat: userId,
               userChatType: user.userType,
             });
             return sessionMessage.save();
           })
           .then((sessionMessage) => {
-            console.log("sessionMessage res:", sessionMessage);
+            // console.log("sessionMessage res:", sessionMessage);
+            io.getIo().emit("adminPosts", {
+              action: "adminAddMessage",
+              // sessionMessage: sessionMessage,
+            });
             res.status(201).json(sessionMessage);
           })
-
           .catch((err) => {
-            connsole.log("err User.findById() in AddMessage else:", err);
-            res.status(500).json({
-              message: err.message,
-            });
+            console.log("err return sessionMessage add:", err);
+            res.status(500).json({ message: err.message });
           });
       }
     })
