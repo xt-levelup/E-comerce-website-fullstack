@@ -16,6 +16,9 @@ const ChatPage = () => {
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
+  const auth = useSelector((state) => {
+    return state.authSlice.auth;
+  });
 
   const [chatData, setChatData] = useState(null);
   const [chatContent, setChatContent] = useState([]);
@@ -33,36 +36,11 @@ const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(authSliceActions.errorMessageUpdate(null));
-  }, []);
-
-  // useEffect(() => {
-  //   const socket = openSocket("http://localhost:5000");
-  //   socket.on("posts", (data) => {
-  //     if (data.action === "addMessageAdmin") {
-  //       console.log(
-  //         `socket ${
-  //           JSON.parse(localStorage.getItem("userData")).email
-  //         } connected: ${currentMessage}`
-  //       );
-  //       getChats();
-  //     }
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   const socket = openSocket("http://localhost:5000");
-  //   socket.on("adminPosts", (data) => {
-  //     if (data.action === "adminAddMessage") {
-  //       console.log(
-  //         `socket ${
-  //           JSON.parse(localStorage.getItem("userData")).email
-  //         } connected!: ${count}`
-  //       );
-  //       getChats();
-  //     }
-  //   });
-  // }, [getChats]);
+    if (!auth) {
+      setChatData(null);
+      setChatContent(null);
+    }
+  }, [auth]);
 
   const currentMessageHandle = (event) => {
     setCurrentMessagge(event.target.value);
@@ -157,7 +135,9 @@ const ChatPage = () => {
 
   useEffect(() => {
     try {
-      getChats();
+      if (localStorageData && localStorageData.userId) {
+        getChats();
+      }
     } catch (err) {
       dispatch(authSliceActions.errorMessageUpdate(err.message));
     }
@@ -238,9 +218,9 @@ const ChatPage = () => {
     dispatch(authSliceActions.errorMessageUpdate(null));
   };
 
-  // useEffect(() => {
-  //   console.log("errorMessage:", errorMessage);
-  // }, [errorMessage]);
+  useEffect(() => {
+    console.log("errorMessage:", errorMessage);
+  }, [errorMessage]);
   // useEffect(() => {
   //   console.log("localStorageData:", localStorageData);
   // }, [localStorageData]);
@@ -265,7 +245,7 @@ const ChatPage = () => {
         <p>Apps / Chat</p>
       </div>
       <div className={styles.action}>
-        {errorMessage && (
+        {/* {errorMessage && (
           <div
             style={{
               display: "flex",
@@ -289,7 +269,7 @@ const ChatPage = () => {
               Close X
             </button>
           </div>
-        )}
+        )} */}
 
         <div className={styles["list-users"]}>
           <div>
@@ -372,6 +352,12 @@ const ChatPage = () => {
             </form>
           </div>
         </div>
+        {errorMessage && (
+          <div className={styles.errorDisplay}>
+            <p>{errorMessage}</p>
+            <p>Something went wrong! Login again!</p>
+          </div>
+        )}
       </div>
     </div>
   );
