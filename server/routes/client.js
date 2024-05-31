@@ -19,4 +19,6 @@ router.post(
   clientControllers.clientAddToCart
 );
 
+router.post("/getCart", authCheck.checkToken, clientControllers.getCart);
+
 module.exports = router;

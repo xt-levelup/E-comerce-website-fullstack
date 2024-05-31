@@ -2,8 +2,10 @@ import { Helmet } from "react-helmet";
 import styles from "./CartPage.module.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 
 import { authSliceActions } from "../store/auth";
+import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -12,6 +14,63 @@ const CartPage = () => {
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
+  const errorMessage = useSelector((state) => {
+    return state.authSlice.errorMessage;
+  });
+  const productData = useSelector((state) => {
+    return state.fetchProductsSlice.productData;
+  });
+
+  const [cartData, setCartData] = useState(null);
+  const [cartToView, setCartToView] = useState(null);
+
+  useEffect(() => {
+    dispatch(fetchProductsSliceActions());
+    getCartHandle();
+  }, []);
+
+  const getCartHandle = async () => {
+    const localStorageData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorageData && localStorageData.token;
+    const urlServer = "http://localhost:5000/getCart";
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+    const data = await response.json();
+    console.log("data getCartHandle:", data);
+    if (!response.ok) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot get data now! Maybe you lost internet!"
+        )
+      );
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      setCartData(data);
+    }
+  };
+
+  useEffect(() => {
+    if (cartData && productData) {
+      const getData = cartData.cart.items.map((item) => {
+        const prodId = item.productId;
+        const productFilter = productData.find((product) => {
+          return product._id === prodId;
+        });
+        return { product: productFilter, item };
+      });
+      console.log("getData:", getData);
+      setCartToView(getData);
+    }
+  }, [productData, cartData]);
 
   const goToShopping = () => {
     navigate("/shop");
@@ -19,6 +78,16 @@ const CartPage = () => {
   const goToCheckout = () => {
     navigate("/checkout");
   };
+
+  useEffect(() => {
+    console.log("productData:", productData);
+  }, [productData]);
+  useEffect(() => {
+    console.log("errorMessage:", errorMessage);
+  }, [errorMessage]);
+  useEffect(() => {
+    console.log("cartData:", cartData);
+  }, [cartData]);
 
   return (
     <div className={styles.contain}>
@@ -33,22 +102,68 @@ const CartPage = () => {
         <h2>SHOPPING CART</h2>
         <div className={styles.detail}>
           <div className={styles.list}>
-            <div className={styles["list-items"]}>
-              <h4>IMAGE</h4>
-              <h4>PRODUCT</h4>
-              <h4>PRICE</h4>
-              <h4>QUANTITY</h4>
-              <h4>TOTAL</h4>
-              <h4>REMOVE</h4>
+            <div
+              className={styles["list-items"]}
+              style={{ backgroundColor: "rgb(220 220 220)", padding: "1em" }}
+            >
+              <h4 style={{ textAlign: "center" }}>IMAGE</h4>
+              <h4 style={{ textAlign: "center" }}>PRODUCT</h4>
+              <h4 style={{ textAlign: "center" }}>PRICE</h4>
+              <h4 style={{ textAlign: "center" }}>QUANTITY</h4>
+              <h4 style={{ textAlign: "center" }}>TOTAL</h4>
+              <h4 style={{ textAlign: "center" }}>REMOVE</h4>
             </div>
-            <div className={styles["list-items"]}>
-              <p>image</p>
-              <p>product</p>
-              <p>price</p>
-              <p>quantity</p>
-              <p>total</p>
-              <p>remove</p>
-            </div>
+            {cartToView &&
+              cartToView.length > 0 &&
+              cartToView.map((product) => {
+                return (
+                  <div key={product.item._id} className={styles["list-items"]}>
+                    <div style={{}}>
+                      <img
+                        src={`http://localhost:5000/${product.product.imageUrls[0]}`}
+                      />
+                    </div>
+                    <h4 style={{ textAlign: "center" }}>
+                      {product.product.name}
+                    </h4>
+                    <p style={{ textAlign: "center" }}>
+                      {product.product.price.toLocaleString("vi-VN")} VND
+                    </p>
+                    <p style={{ textAlign: "center" }}>
+                      {product.item.quantity}
+                    </p>
+                    <p style={{ textAlign: "center" }}>
+                      {(
+                        product.product.price * product.item.quantity
+                      ).toLocaleString("vi-VN")}{" "}
+                      VND
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                );
+              })}
+
             <div className={styles.nav}>
               <div onClick={goToShopping}>
                 <svg

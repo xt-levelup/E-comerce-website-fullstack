@@ -177,44 +177,23 @@ exports.clientAddToCart = (req, res, next) => {
         message: "Something went wrong! Cannot add to cart now!",
       });
     });
+};
 
-  // User.findById(req.userId)
-  //   .then((user) => {
-  //     if (!user) {
-  //       res.status(403).json({
-  //         message: "Please login again and trying later!",
-  //       });
-  //       return;
-  //     }
-  //     Product.findById(productIdAddCart)
-  //       .then((product) => {
-  //         console.log("productProduct.findById:", product);
-  //         if (!product) {
-  //           res.status(404).json({
-  //             message: "The product not found! Maybe it be sold out!",
-  //           });
-  //           return;
-  //         }
-  //         return user.addToCart(product, numberToCart);
-  //       })
-  //       .then((result) => {
-  //         console.log("result user.addToCart:", result);
-  //         res.status(201).json({
-  //           message: "Add to cart successfully!",
-  //         });
-  //       })
-  //       .catch((err) => {
-  //         console.log("err addToCart Product.findById:", err);
-  //         res.status(500).json({
-  //           message:
-  //             "Something went wrong! Please login again and trying later!",
-  //         });
-  //       });
-  //   })
-  //   .catch((err) => {
-  //     console.log("err addToCart UserFindId:", err);
-  //     res.status(500).json({
-  //       message: "Something went wrong when add to cart!",
-  //     });
-  //   });
+exports.getCart = (req, res, next) => {
+  User.findById(req.userId)
+    .then((user) => {
+      if (!user) {
+        res.status(403).json({
+          message: "The account is not exist!",
+        });
+        return;
+      }
+      res.status(200).json(user);
+    })
+    .catch((err) => {
+      console.log("err User.findById getCart:", err);
+      res.status(500).json({
+        message: "Something went wrong! Cannot get data now!",
+      });
+    });
 };

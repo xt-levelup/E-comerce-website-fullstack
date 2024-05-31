@@ -36,12 +36,32 @@
 .list{
     display:flex;
     flex-direction:column;
+    gap:1em;
 }
 
 .list-items{
     display:grid;
     grid-template-columns:13% 25% 13% 13% 13% 13%;
     gap:2%;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+}
+.list-items img{
+    object-fit:fill;
+    width:100%;
+    height:100%;
+    border-radius:6px;
+}
+.list-items svg{
+    width:24px;
+    height:24px;
+    cursor:pointer;
+}
+.list-items svg:hover{
+    transition:transform color 0.5s;
+    transform:scale(1.2);
+    color:red;
 }
 
 .nav{
