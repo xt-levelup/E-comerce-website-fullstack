@@ -197,3 +197,33 @@ exports.getCart = (req, res, next) => {
       });
     });
 };
+
+exports.removeCartItem = (req, res, next) => {
+  const productId = req.body.productId;
+
+  User.findById(req.userId)
+    .then((user) => {
+      if (!user) {
+        res.status(403).json({
+          message: "This user cannot found!",
+        });
+        return;
+      }
+      const newItems = user.cart.items.filter((item) => {
+        return item.productId.toString() !== productId.toString();
+      });
+      user.cart.items = newItems;
+      return user.save();
+    })
+    .then((result) => {
+      res.status(201).json({
+        message: "Removed the item from cart!",
+      });
+    })
+    .catch((err) => {
+      console.log("err removeCartItem User.finById:", err);
+      res.status(500).json({
+        message: "Cannot remove this item now! Please try again later!",
+      });
+    });
+};

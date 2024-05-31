@@ -23,6 +23,8 @@ const CartPage = () => {
 
   const [cartData, setCartData] = useState(null);
   const [cartToView, setCartToView] = useState(null);
+  const [subTotal, setSubTotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
   // const [initQuantity, setInitQuantity] = useState(null);
   // const []
@@ -88,9 +90,11 @@ const CartPage = () => {
   };
 
   const nextHandle = (productId) => {
-    const currentProduct = cartToView.find((product) => {
-      return product.item._id === productId;
-    });
+    const currentProduct =
+      cartToView &&
+      cartToView.find((product) => {
+        return product.item._id === productId;
+      });
     // console.log("currentProduct:", currentProduct);
     if (currentProduct && currentProduct.item.quantity > 0) {
       const newQuantity = currentProduct.item.quantity + 1;
@@ -133,9 +137,11 @@ const CartPage = () => {
     }
   };
   const prevHandle = (productId) => {
-    const currentProduct = cartToView.find((product) => {
-      return product.item._id === productId;
-    });
+    const currentProduct =
+      cartToView &&
+      cartToView.find((product) => {
+        return product.item._id === productId;
+      });
     // console.log("currentProduct:", currentProduct);
     if (currentProduct && currentProduct.item.quantity > 1) {
       const newQuantity = currentProduct.item.quantity - 1;
@@ -179,6 +185,51 @@ const CartPage = () => {
   };
 
   useEffect(() => {
+    if (cartToView && cartToView.length > 0) {
+      const listPriceTotal = cartToView.map((cart) => {
+        return cart.item.quantity * cart.product.price;
+      });
+      console.log("listPriceTotal:", listPriceTotal);
+      const totalPrice = listPriceTotal.reduce((accum, current) => {
+        return accum + current;
+      }, 0);
+      setTotal(totalPrice);
+    }
+  }, [cartToView]);
+
+  const removeCartItemHandle = async (productId) => {
+    const localStorageData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorageData && localStorageData.token;
+    const urlServer = "http://localhost:5000/removeCartItem";
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        productId: productId,
+      }),
+    });
+    const data = await response.json();
+    console.log("data removeCartItemHandle:", data);
+    if (!response.ok) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot remove this item now! Maybe you lost internet!"
+        )
+      );
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      getCartHandle();
+    }
+  };
+
+  useEffect(() => {
     console.log("productData:", productData);
   }, [productData]);
   useEffect(() => {
@@ -190,6 +241,9 @@ const CartPage = () => {
   useEffect(() => {
     console.log("cartToView:", cartToView);
   }, [cartToView]);
+  useEffect(() => {
+    console.log("total:", total);
+  }, [total]);
 
   return (
     <div className={styles.contain}>
@@ -297,6 +351,7 @@ const CartPage = () => {
                         alignItems: "center",
                         justifyContent: "center",
                       }}
+                      className={styles["trash-icon"]}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -305,6 +360,9 @@ const CartPage = () => {
                         stroke-width="1.5"
                         stroke="currentColor"
                         class="size-6"
+                        onClick={() =>
+                          removeCartItemHandle(product.item.productId)
+                        }
                       >
                         <path
                           stroke-linecap="round"
@@ -360,12 +418,12 @@ const CartPage = () => {
             <div className={styles["total-price"]}>
               <div>
                 <h4>SUBTOTAL</h4>
-                <p>199.999.999</p>
+                <p>{total.toLocaleString("vi-VN")} VND</p>
               </div>
               <hr />
               <div>
                 <h4>TOTAL</h4>
-                <p>199.999.999</p>
+                <p>{total.toLocaleString("vi-VN")} VND</p>
               </div>
             </div>
             <div className={styles.coupon}>

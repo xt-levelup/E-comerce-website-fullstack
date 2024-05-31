@@ -80,7 +80,13 @@
     justify-content:center;
     gap:3px;
     cursor:pointer;
-    
+        
+}
+.nav div:hover{
+    background-color:blue;
+    color:white;
+    padding:6px;
+    border-radius:3px;
 }
 .nav button{
     display:flex;
@@ -90,6 +96,14 @@
     cursor:pointer;
     border-radius:3px;
     border:1px solid rgb(147, 143, 143);
+    height:36px;
+}
+.nav button:hover{
+    background-color:green;
+    color:gold;
+}
+.nav button p{
+    font-size:15px;
 }
 
 .nav svg{
@@ -146,4 +160,12 @@
 .coupon svg{
     width:24px;
     height:24px;
+}
+
+.trash-icon{
+
+}
+.trash-icon svg:hover{
+    transform:scale(1.2);
+    color:red;
 }
