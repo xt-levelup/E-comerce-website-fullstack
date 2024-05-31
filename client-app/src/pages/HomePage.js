@@ -25,12 +25,16 @@ const HomePage = () => {
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
+  const productData = useSelector((state) => {
+    return state.fetchProductsSlice.productData;
+  });
 
   const [boxShow, setBoxShow] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageData, setMessageData] = useState(null);
   const [count, setCount] = useState(1);
   const [userId, setUserId] = useState(null);
+  const [imageClickData, setImageClickData] = useState(null);
 
   const browseCollectionButton = () => {
     navigate("/shop");
@@ -43,6 +47,10 @@ const HomePage = () => {
   const messageBoxHandle = () => {
     setBoxShow(!boxShow);
   };
+
+  useEffect(() => {
+    dispatch(fetchProductsSliceActions());
+  }, []);
 
   const boxShowToFalse = (event) => {
     if (event.key === "Escape") {
@@ -222,6 +230,21 @@ const HomePage = () => {
     console.log("boxShow:", boxShow);
   }, [boxShow]);
 
+  const imageClickDataHandle = (product) => {
+    setImageClickData(product);
+  };
+
+  const closeImageClickData = () => {
+    setImageClickData(null);
+  };
+
+  const detailButtonHandle = () => {
+    const productIdImage = imageClickData._id;
+    console.log("productIdImage:", productIdImage);
+    setImageClickData(null);
+    navigate(`/detail/${productIdImage}`);
+  };
+
   // useEffect(() => {
   //   console.log("errorMessage:", errorMessage);
   // }, [errorMessage]);
@@ -229,9 +252,15 @@ const HomePage = () => {
   // useEffect(() => {
   //   console.log("messageData:", messageData);
   // }, [messageData]);
-  // useEffect(() => {
-  //   console.log("author:", author);
-  // }, [author]);
+  useEffect(() => {
+    console.log("author:", author);
+  }, [author]);
+  useEffect(() => {
+    console.log("productData:", productData);
+  }, [productData]);
+  useEffect(() => {
+    console.log("imageClickData:", imageClickData);
+  }, [imageClickData]);
 
   return (
     <div>
@@ -274,16 +303,22 @@ const HomePage = () => {
           <h3>TOP TRENDING PRODUCTS</h3>
         </div>
         <div className={styles["trending-content"]}>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-        <div className={styles["trending-content"]}>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+          {productData &&
+            productData.length > 0 &&
+            productData.slice(0, 8).map((product) => {
+              return (
+                <div key={product._id} className={styles["trending-product"]}>
+                  <div>
+                    <img
+                      src={`http://localhost:5000/${product.imageUrls[0]}`}
+                      onClick={() => imageClickDataHandle(product)}
+                    />
+                  </div>
+                  <h5>{product.name}</h5>
+                  <p>{product.price.toLocaleString("vi-VN")} VND</p>
+                </div>
+              );
+            })}
         </div>
       </div>
       <div className={styles.guaranty}>
@@ -440,6 +475,50 @@ const HomePage = () => {
                   />
                 </svg>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {imageClickData && (
+        <div className={styles["product-click"]}>
+          <div className={styles["product-click-content"]}>
+            <div className={styles["product-click-image"]}>
+              <img
+                src={`http://localhost:5000/${imageClickData.imageUrls[0]}`}
+              />
+            </div>
+            <div>
+              <button
+                style={{ marginLeft: "95%", cursor: "pointer" }}
+                onClick={closeImageClickData}
+              >
+                x
+              </button>
+              <div>
+                <h3>{imageClickData.name}</h3>
+                <h4>{imageClickData.price.toLocaleString("vi-VN")} VND</h4>
+                <p style={{ padding: "1em" }}>{imageClickData.short_desc}</p>
+              </div>
+              <button
+                className={styles["product-click-content-button"]}
+                onClick={detailButtonHandle}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                  />
+                </svg>
+                <p>View Detail</p>
+              </button>
             </div>
           </div>
         </div>

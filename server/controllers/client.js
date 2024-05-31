@@ -1,6 +1,7 @@
 const Message = require("../models/messageSession");
 const User = require("../models/user");
 const io = require("../socket");
+const Product = require("../models/product");
 
 exports.getChatDataClient = (req, res, next) => {
   const userId = req.body.userId;
@@ -129,4 +130,91 @@ exports.deleteMessageSession = (req, res, next) => {
         message: "Something went wrong!",
       });
     });
+};
+
+exports.clientAddToCart = (req, res, next) => {
+  const productIdAddCart = req.body.productIdAddCart;
+  const numberToCart = req.body.numberToCart;
+
+  console.log("productIdAddCart:", productIdAddCart);
+  console.log("numberToCart:", numberToCart);
+  console.log("req.userId:", req.userId);
+
+  Product.findById(productIdAddCart)
+    .then((product) => {
+      if (!product) {
+        res.status(404).json({
+          message: "The product cannot found!",
+        });
+        return;
+      }
+      User.findById(req.userId)
+        .then((user) => {
+          if (!user) {
+            res.status(403).json({
+              message: "The user is not exist!",
+            });
+            return;
+          }
+          return user.addToCart(product, numberToCart);
+        })
+        .then((result) => {
+          console.log("result user.addToCart:", result);
+          res.status(201).json({
+            message: "Add to cart successfully!",
+          });
+        })
+        .catch((err) => {
+          console.log("err User.findById clientAddToCart:", err);
+          res.status(500).json({
+            message: "Something went wrong! Cannot add to cart now!",
+          });
+        });
+    })
+    .catch((err) => {
+      console.log("err Product.findById clientAddToCart:", err);
+      res.status(500).json({
+        message: "Something went wrong! Cannot add to cart now!",
+      });
+    });
+
+  // User.findById(req.userId)
+  //   .then((user) => {
+  //     if (!user) {
+  //       res.status(403).json({
+  //         message: "Please login again and trying later!",
+  //       });
+  //       return;
+  //     }
+  //     Product.findById(productIdAddCart)
+  //       .then((product) => {
+  //         console.log("productProduct.findById:", product);
+  //         if (!product) {
+  //           res.status(404).json({
+  //             message: "The product not found! Maybe it be sold out!",
+  //           });
+  //           return;
+  //         }
+  //         return user.addToCart(product, numberToCart);
+  //       })
+  //       .then((result) => {
+  //         console.log("result user.addToCart:", result);
+  //         res.status(201).json({
+  //           message: "Add to cart successfully!",
+  //         });
+  //       })
+  //       .catch((err) => {
+  //         console.log("err addToCart Product.findById:", err);
+  //         res.status(500).json({
+  //           message:
+  //             "Something went wrong! Please login again and trying later!",
+  //         });
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     console.log("err addToCart UserFindId:", err);
+  //     res.status(500).json({
+  //       message: "Something went wrong when add to cart!",
+  //     });
+  //   });
 };

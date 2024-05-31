@@ -34,14 +34,14 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.methods.addToCart = function (product) {
+userSchema.methods.addToCart = function (product, numberToCart) {
   const cartProductIndex = this.cart.items.findIndex((i) => {
     return i.productId.toString() === product._id.toString();
   });
-  let newQuantity = 1;
+  let newQuantity = parseInt(numberToCart);
   const updatedCartItems = [...this.cart.items];
   if (cartProductIndex >= 0) {
-    newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+    newQuantity = this.cart.items[cartProductIndex].quantity + numberToCart;
     updatedCartItems[cartProductIndex].quantity = newQuantity;
   } else {
     updatedCartItems.push({
@@ -56,7 +56,7 @@ userSchema.methods.addToCart = function (product) {
 
   this.cart = updatedCart;
 
-  return this.save;
+  return this.save();
 };
 
 userSchema.methods.clearCart = function () {

@@ -68,18 +68,3 @@ route.post(
 );
 
 module.exports = route;
-
-//     body("password").custom(async (value, { req }) => {
-//       const userDoc = await User.findOne({ email: req.body.email });
-//       console.log("userDoc:", userDoc);
-//       const doMatch = await bcrypt.compare(value, userDoc.password);
-//       console.log("doMatch:", doMatch);
-//       if (!doMatch) {
-//         throw new Error("Password is not correct!");
-//       }
-
-//       return true;
-//     }),
-//   ],
-//   authControllers.postLogin
-// );

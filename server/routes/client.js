@@ -12,10 +12,11 @@ router.post(
   clientControllers.getChatDataClient
 );
 router.post("/deleteMessageSession", clientControllers.deleteMessageSession);
-// router.post(
-//   "/getChatDataClient",
-//   authCheck.checkToken,
-//   clientControllers.getChatDataClient
-// );
+
+router.post(
+  "/clientAddToCart",
+  authCheck.checkToken,
+  clientControllers.clientAddToCart
+);
 
 module.exports = router;
