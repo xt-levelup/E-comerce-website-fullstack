@@ -50,6 +50,9 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(fetchProductsSliceActions());
+    dispatch(
+      authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
+    );
   }, []);
 
   const boxShowToFalse = (event) => {
@@ -65,11 +68,11 @@ const HomePage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("posts", (data) => {
       if (data.action === "addMessage") {
-        console.log(
-          `socket ${
-            JSON.parse(localStorage.getItem("user")).email
-          } connected!: ${count}`
-        );
+        // console.log(
+        //   `socket ${
+        //     JSON.parse(localStorage.getItem("user")).email
+        //   } connected!: ${count}`
+        // );
         getChatDataClient();
       }
     });
@@ -79,11 +82,11 @@ const HomePage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("adminPosts", (data) => {
       if (data.action === "adminAddMessage") {
-        console.log(
-          `socket ${
-            JSON.parse(localStorage.getItem("user")).email
-          } connected!: ${count}`
-        );
+        // console.log(
+        //   `socket ${
+        //     JSON.parse(localStorage.getItem("user")).email
+        //   } connected!: ${count}`
+        // );
         getChatDataClient();
       }
     });
@@ -97,11 +100,13 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(
-      authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
-    );
-    setUserId(JSON.parse(localStorage.getItem("user")).userId);
-  }, []);
+    // dispatch(
+    //   authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
+    // );
+    if (author) {
+      setUserId(author.userId);
+    }
+  }, [author]);
 
   useEffect(() => {
     try {
@@ -135,7 +140,7 @@ const HomePage = () => {
         Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
-        userId: JSON.parse(localStorage.getItem("user")).userId,
+        userId: userId,
       }),
     });
     const data = await response.json();
@@ -261,6 +266,9 @@ const HomePage = () => {
   useEffect(() => {
     console.log("imageClickData:", imageClickData);
   }, [imageClickData]);
+  useEffect(() => {
+    console.log("userId:", userId);
+  }, [userId]);
 
   return (
     <div>

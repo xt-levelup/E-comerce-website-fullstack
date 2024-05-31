@@ -24,6 +24,9 @@ const CartPage = () => {
   const [cartData, setCartData] = useState(null);
   const [cartToView, setCartToView] = useState(null);
 
+  // const [initQuantity, setInitQuantity] = useState(null);
+  // const []
+
   useEffect(() => {
     dispatch(fetchProductsSliceActions());
     getCartHandle();
@@ -68,7 +71,12 @@ const CartPage = () => {
         return { product: productFilter, item };
       });
       console.log("getData:", getData);
-      setCartToView(getData);
+      setCartToView(
+        getData.slice().sort((a, b) => {
+          // return a.product.name - b.product.name;
+          return a.product.name.localeCompare(b.product.name);
+        })
+      );
     }
   }, [productData, cartData]);
 
@@ -77,6 +85,97 @@ const CartPage = () => {
   };
   const goToCheckout = () => {
     navigate("/checkout");
+  };
+
+  const nextHandle = (productId) => {
+    const currentProduct = cartToView.find((product) => {
+      return product.item._id === productId;
+    });
+    // console.log("currentProduct:", currentProduct);
+    if (currentProduct && currentProduct.item.quantity > 0) {
+      const newQuantity = currentProduct.item.quantity + 1;
+      currentProduct.item.quantity = newQuantity;
+      // console.log("currentProduct:", currentProduct);
+      const cartToViewFilter = cartToView.filter((product) => {
+        return product.item._id !== productId;
+      });
+      // console.log("cartToViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, currentProduct];
+
+      // console.log("newCartToView:", newCartToView);
+
+      const newCartToViewSort = newCartToView.slice().sort((a, b) => {
+        // return a.product.name - b.product.name;
+        return a.product.name.localeCompare(b.product.name);
+      });
+
+      // console.log("newCartToViewSort:", newCartToViewSort);
+      setCartToView(newCartToViewSort);
+    } else if (currentProduct && currentProduct.item.quantity < 0) {
+      const newQuantity = 1;
+      currentProduct.item.quantity = newQuantity;
+      // console.log("currentProduct:", currentProduct);
+      const cartToViewFilter = cartToView.filter((product) => {
+        return product.item._id !== productId;
+      });
+      // console.log("cartToViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, currentProduct];
+
+      // console.log("newCartToView:", newCartToView);
+
+      const newCartToViewSort = newCartToView.slice().sort((a, b) => {
+        // return a.product.name - b.product.name;
+        return a.product.name.localeCompare(b.product.name);
+      });
+
+      // console.log("newCartToViewSort:", newCartToViewSort);
+      setCartToView(newCartToViewSort);
+    }
+  };
+  const prevHandle = (productId) => {
+    const currentProduct = cartToView.find((product) => {
+      return product.item._id === productId;
+    });
+    // console.log("currentProduct:", currentProduct);
+    if (currentProduct && currentProduct.item.quantity > 1) {
+      const newQuantity = currentProduct.item.quantity - 1;
+      currentProduct.item.quantity = newQuantity;
+      // console.log("currentProduct:", currentProduct);
+      const cartToViewFilter = cartToView.filter((product) => {
+        return product.item._id !== productId;
+      });
+      // console.log("cartToViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, currentProduct];
+
+      // console.log("newCartToView:", newCartToView);
+
+      const newCartToViewSort = newCartToView.slice().sort((a, b) => {
+        // return a.product.name - b.product.name;
+        return a.product.name.localeCompare(b.product.name);
+      });
+
+      // console.log("newCartToViewSort:", newCartToViewSort);
+      setCartToView(newCartToViewSort);
+    } else if (currentProduct && currentProduct.item.quantity < 1) {
+      const newQuantity = 1;
+      currentProduct.item.quantity = newQuantity;
+      // console.log("currentProduct:", currentProduct);
+      const cartToViewFilter = cartToView.filter((product) => {
+        return product.item._id !== productId;
+      });
+      // console.log("cartToViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, currentProduct];
+
+      // console.log("newCartToView:", newCartToView);
+
+      const newCartToViewSort = newCartToView.slice().sort((a, b) => {
+        // return a.product.name - b.product.name;
+        return a.product.name.localeCompare(b.product.name);
+      });
+
+      // console.log("newCartToViewSort:", newCartToViewSort);
+      setCartToView(newCartToViewSort);
+    }
   };
 
   useEffect(() => {
@@ -88,6 +187,9 @@ const CartPage = () => {
   useEffect(() => {
     console.log("cartData:", cartData);
   }, [cartData]);
+  useEffect(() => {
+    console.log("cartToView:", cartToView);
+  }, [cartToView]);
 
   return (
     <div className={styles.contain}>
@@ -118,7 +220,7 @@ const CartPage = () => {
               cartToView.map((product) => {
                 return (
                   <div key={product.item._id} className={styles["list-items"]}>
-                    <div style={{}}>
+                    <div>
                       <img
                         src={`http://localhost:5000/${product.product.imageUrls[0]}`}
                       />
@@ -129,9 +231,60 @@ const CartPage = () => {
                     <p style={{ textAlign: "center" }}>
                       {product.product.price.toLocaleString("vi-VN")} VND
                     </p>
-                    <p style={{ textAlign: "center" }}>
-                      {product.item.quantity}
-                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <svg
+                          class="w-6 h-6 text-gray-800 dark:text-white"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          onClick={() => prevHandle(product.item._id)}
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.729 5.575c1.304-1.074 3.27-.146 3.27 1.544v9.762c0 1.69-1.966 2.618-3.27 1.544l-5.927-4.881a2 2 0 0 1 0-3.088l5.927-4.88Z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                        <input
+                          type="number"
+                          min="1"
+                          value={product.item.quantity}
+                          style={{
+                            width: "36px",
+                            height: "24px",
+                            textAlign: "right",
+                          }}
+                          // value={cartNumber}
+                          // onChange={cartNumberInputHandle}
+                        />
+                        <svg
+                          class="w-6 h-6 text-gray-800 dark:text-white"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          onClick={() => nextHandle(product.item._id)}
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10.271 5.575C8.967 4.501 7 5.43 7 7.12v9.762c0 1.69 1.967 2.618 3.271 1.544l5.927-4.881a2 2 0 0 0 0-3.088l-5.927-4.88Z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    </div>
                     <p style={{ textAlign: "center" }}>
                       {(
                         product.product.price * product.item.quantity

@@ -200,6 +200,22 @@ const DetailPage = () => {
                   </div>
                   <button onClick={addToCartHandle}>Add To Cart</button>
                 </div>
+                {errorMessage && (
+                  <div>
+                    <p
+                      style={{
+                        color: "red",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        navigate("/login");
+                      }}
+                    >
+                      {errorMessage}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -61,7 +61,7 @@
 .list-items svg:hover{
     transition:transform color 0.5s;
     transform:scale(1.2);
-    color:red;
+    color:blue;
 }
 
 .nav{
