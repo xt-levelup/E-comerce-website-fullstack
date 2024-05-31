@@ -25,5 +25,6 @@ router.post(
   authCheck.checkToken,
   clientControllers.removeCartItem
 );
+router.post("/updateCart", authCheck.checkToken, clientControllers.updateCart);
 
 module.exports = router;

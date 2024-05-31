@@ -227,3 +227,30 @@ exports.removeCartItem = (req, res, next) => {
       });
     });
 };
+
+exports.updateCart = (req, res, next) => {
+  const newItems = req.body.newItems;
+
+  User.findById(req.userId)
+    .then((user) => {
+      if (!user) {
+        res.status(403).json({
+          message: "This user not exist!",
+        });
+        return;
+      }
+      user.cart.items = newItems;
+      return user.save();
+    })
+    .then((result) => {
+      res.status(201).json({
+        message: "Updated cart successfully!",
+      });
+    })
+    .catch((err) => {
+      console.log("err updateCart User.findById:", err);
+      res.status(500).json({
+        message: "Cannot update cart now! Please try again later!",
+      });
+    });
+};

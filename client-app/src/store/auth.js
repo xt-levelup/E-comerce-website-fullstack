@@ -7,6 +7,7 @@ const authInit = {
   password: "",
   phone: "",
   errorMessage: null,
+  cartToView:null,
 };
 
 const authSlice = createSlice({
@@ -30,6 +31,9 @@ const authSlice = createSlice({
     },
     authorUpdate(state, action) {
       state.author = action.payload;
+    },
+    cartToViewUpdate(state, action) {
+      state.cartToView = action.payload;
     },
   },
 });

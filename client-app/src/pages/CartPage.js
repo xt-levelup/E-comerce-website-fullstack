@@ -14,6 +14,9 @@ const CartPage = () => {
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
+  const cartToView = useSelector((state) => {
+    return state.authSlice.cartToView;
+  });
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
@@ -22,9 +25,10 @@ const CartPage = () => {
   });
 
   const [cartData, setCartData] = useState(null);
-  const [cartToView, setCartToView] = useState(null);
+  // const [cartToView, setCartToView] = useState(null);
   const [subTotal, setSubTotal] = useState(0);
   const [total, setTotal] = useState(0);
+  const [viewsReturn, setViewsReturn] = useState(null);
 
   // const [initQuantity, setInitQuantity] = useState(null);
   // const []
@@ -73,19 +77,22 @@ const CartPage = () => {
         return { product: productFilter, item };
       });
       console.log("getData:", getData);
-      setCartToView(
-        getData.slice().sort((a, b) => {
-          // return a.product.name - b.product.name;
-          return a.product.name.localeCompare(b.product.name);
-        })
+      dispatch(
+        authSliceActions.cartToViewUpdate(
+          getData.slice().sort((a, b) => {
+            return a.product.name.localeCompare(b.product.name);
+          })
+        )
       );
     }
   }, [productData, cartData]);
 
   const goToShopping = () => {
+    updateCartHandle();
     navigate("/shop");
   };
   const goToCheckout = () => {
+    updateCartHandle();
     navigate("/checkout");
   };
 
@@ -96,44 +103,49 @@ const CartPage = () => {
         return product.item._id === productId;
       });
     // console.log("currentProduct:", currentProduct);
+
     if (currentProduct && currentProduct.item.quantity > 0) {
+      // console.log("currentProduct:", currentProduct);
       const newQuantity = currentProduct.item.quantity + 1;
-      currentProduct.item.quantity = newQuantity;
-      // console.log("currentProduct:", currentProduct);
-      const cartToViewFilter = cartToView.filter((product) => {
-        return product.item._id !== productId;
+      // console.log(newQuantity);
+      const newItem = { ...currentProduct.item, quantity: newQuantity };
+      // console.log("newItem:", newItem);
+      const newCurrentProduct = { ...currentProduct, item: newItem };
+      // console.log("newCurrentProduct:", newCurrentProduct);
+
+      // console.log("productId:", productId);
+      // console.log("cartToView:", cartToView);
+      const cartToViewFilter = cartToView.filter((prod) => {
+        return prod.item._id !== productId;
       });
-      // console.log("cartToViewFilter:", cartToViewFilter);
-      const newCartToView = [...cartToViewFilter, currentProduct];
-
+      // console.log("cartoViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, newCurrentProduct];
       // console.log("newCartToView:", newCartToView);
-
       const newCartToViewSort = newCartToView.slice().sort((a, b) => {
-        // return a.product.name - b.product.name;
         return a.product.name.localeCompare(b.product.name);
       });
-
-      // console.log("newCartToViewSort:", newCartToViewSort);
-      setCartToView(newCartToViewSort);
+      dispatch(authSliceActions.cartToViewUpdate(newCartToViewSort));
     } else if (currentProduct && currentProduct.item.quantity < 0) {
-      const newQuantity = 1;
-      currentProduct.item.quantity = newQuantity;
       // console.log("currentProduct:", currentProduct);
-      const cartToViewFilter = cartToView.filter((product) => {
-        return product.item._id !== productId;
+      const newQuantity = 1;
+      // console.log(newQuantity);
+      const newItem = { ...currentProduct.item, quantity: newQuantity };
+      // console.log("newItem:", newItem);
+      const newCurrentProduct = { ...currentProduct, item: newItem };
+      // console.log("newCurrentProduct:", newCurrentProduct);
+
+      // console.log("productId:", productId);
+      // console.log("cartToView:", cartToView);
+      const cartToViewFilter = cartToView.filter((prod) => {
+        return prod.item._id !== productId;
       });
-      // console.log("cartToViewFilter:", cartToViewFilter);
-      const newCartToView = [...cartToViewFilter, currentProduct];
-
+      // console.log("cartoViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, newCurrentProduct];
       // console.log("newCartToView:", newCartToView);
-
       const newCartToViewSort = newCartToView.slice().sort((a, b) => {
-        // return a.product.name - b.product.name;
         return a.product.name.localeCompare(b.product.name);
       });
-
-      // console.log("newCartToViewSort:", newCartToViewSort);
-      setCartToView(newCartToViewSort);
+      dispatch(authSliceActions.cartToViewUpdate(newCartToViewSort));
     }
   };
   const prevHandle = (productId) => {
@@ -142,45 +154,48 @@ const CartPage = () => {
       cartToView.find((product) => {
         return product.item._id === productId;
       });
-    // console.log("currentProduct:", currentProduct);
     if (currentProduct && currentProduct.item.quantity > 1) {
+      // console.log("currentProduct:", currentProduct);
       const newQuantity = currentProduct.item.quantity - 1;
-      currentProduct.item.quantity = newQuantity;
-      // console.log("currentProduct:", currentProduct);
-      const cartToViewFilter = cartToView.filter((product) => {
-        return product.item._id !== productId;
+      // console.log(newQuantity);
+      const newItem = { ...currentProduct.item, quantity: newQuantity };
+      // console.log("newItem:", newItem);
+      const newCurrentProduct = { ...currentProduct, item: newItem };
+      // console.log("newCurrentProduct:", newCurrentProduct);
+
+      // console.log("productId:", productId);
+      // console.log("cartToView:", cartToView);
+      const cartToViewFilter = cartToView.filter((prod) => {
+        return prod.item._id !== productId;
       });
-      // console.log("cartToViewFilter:", cartToViewFilter);
-      const newCartToView = [...cartToViewFilter, currentProduct];
-
+      // console.log("cartoViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, newCurrentProduct];
       // console.log("newCartToView:", newCartToView);
-
       const newCartToViewSort = newCartToView.slice().sort((a, b) => {
-        // return a.product.name - b.product.name;
         return a.product.name.localeCompare(b.product.name);
       });
-
-      // console.log("newCartToViewSort:", newCartToViewSort);
-      setCartToView(newCartToViewSort);
-    } else if (currentProduct && currentProduct.item.quantity < 1) {
+      dispatch(authSliceActions.cartToViewUpdate(newCartToViewSort));
+    } else if (currentProduct && currentProduct.item.quantity < 0) {
+      // console.log("currentProduct:", currentProduct);
       const newQuantity = 1;
-      currentProduct.item.quantity = newQuantity;
-      // console.log("currentProduct:", currentProduct);
-      const cartToViewFilter = cartToView.filter((product) => {
-        return product.item._id !== productId;
+      // console.log(newQuantity);
+      const newItem = { ...currentProduct.item, quantity: newQuantity };
+      // console.log("newItem:", newItem);
+      const newCurrentProduct = { ...currentProduct, item: newItem };
+      // console.log("newCurrentProduct:", newCurrentProduct);
+
+      // console.log("productId:", productId);
+      // console.log("cartToView:", cartToView);
+      const cartToViewFilter = cartToView.filter((prod) => {
+        return prod.item._id !== productId;
       });
-      // console.log("cartToViewFilter:", cartToViewFilter);
-      const newCartToView = [...cartToViewFilter, currentProduct];
-
+      // console.log("cartoViewFilter:", cartToViewFilter);
+      const newCartToView = [...cartToViewFilter, newCurrentProduct];
       // console.log("newCartToView:", newCartToView);
-
       const newCartToViewSort = newCartToView.slice().sort((a, b) => {
-        // return a.product.name - b.product.name;
         return a.product.name.localeCompare(b.product.name);
       });
-
-      // console.log("newCartToViewSort:", newCartToViewSort);
-      setCartToView(newCartToViewSort);
+      dispatch(authSliceActions.cartToViewUpdate(newCartToViewSort));
     }
   };
 
@@ -194,6 +209,11 @@ const CartPage = () => {
         return accum + current;
       }, 0);
       setTotal(totalPrice);
+      const newCartToView = cartToView.map((product) => {
+        return product.item;
+      });
+      console.log("newCartToView:", newCartToView);
+      setViewsReturn(newCartToView);
     }
   }, [cartToView]);
 
@@ -229,6 +249,38 @@ const CartPage = () => {
     }
   };
 
+  const updateCartHandle = async () => {
+    const localStorageData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorageData && localStorageData.token;
+    const urlServer = "http://localhost:5000/updateCart";
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        newItems: viewsReturn,
+      }),
+    });
+    const data = await response.json();
+    console.log("data updateCartHandle:", data);
+    if (!response.ok) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot update cart now! Maybe you lost internet!"
+        )
+      );
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      getCartHandle();
+    }
+  };
+
   useEffect(() => {
     console.log("productData:", productData);
   }, [productData]);
@@ -244,6 +296,9 @@ const CartPage = () => {
   useEffect(() => {
     console.log("total:", total);
   }, [total]);
+  useEffect(() => {
+    console.log("viewsReturn:", viewsReturn);
+  }, [viewsReturn]);
 
   return (
     <div className={styles.contain}>
