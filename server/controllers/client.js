@@ -3,6 +3,16 @@ const User = require("../models/user");
 const io = require("../socket");
 const Product = require("../models/product");
 const Order = require("../models/order");
+const nodemailer = require("nodemailer");
+const senGridTransport = require("nodemailer-sendgrid-transport");
+
+const transporter = nodemailer.createTransport(
+  senGridTransport({
+    auth: {
+      api_key: process.env.NODE_MAILER_KEY,
+    },
+  })
+);
 
 exports.getChatDataClient = (req, res, next) => {
   const userId = req.body.userId;
@@ -258,6 +268,35 @@ exports.updateCart = (req, res, next) => {
 
 exports.userOrder = (req, res, next) => {
   const order = req.body.order;
+  const htmlSender = `
+    <h1>Hi: ${order.email}<h1>    
+      <p style="font-size:12px;" >Address: ${order.address}</p>
+      <p style="font-size:12px;" >Phone number: ${order.phone}</p>
+      <p style="font-size:12px;" >Name: ${order.name}</p>    
+    <table border="1" style="font-size:12px;" >
+      <tr>
+          <th>Product Name</th>
+          <th>Image</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+      </tr>
+      ${
+        order &&
+        order.orderItems.length > 0 &&
+        order.orderItems.map((item) => {
+          return ` <tr>          
+        <td>${item.currentProd.name}</td>          
+        <td><img src="http://localhost:5000/${item.currentProd.imageUrls[0]}" style="object-fit:fill; width:100%; height:100%;" alt="${item.currentProd.name}"></td>
+        <!-- <td><img src="http://localhost:5000/images/1716909526355-173090586-watch_1_4.jpeg" style="object-fit:fill; width:100%; height:100%;" alt="${item.currentProd.name}"></td> -->
+        <td>${item.currentProd.price} VND</td>          
+        <td>${item.quantity}</td>          
+        <td>${item.totalPrice} VND</td>
+    </tr>`;
+        })
+      }      
+    </table>
+  `;
 
   console.log("order:", order);
 
@@ -289,8 +328,15 @@ exports.userOrder = (req, res, next) => {
           return user.clearCart();
         })
         .then((result) => {
+          console.log("result userOrder user.clearCart():", result);
           res.status(201).json({
             message: "Your order was done!",
+          });
+          return transporter.sendMail({
+            to: result.email,
+            from: "xitrumvndn@gmail.com",
+            subject: "Yor new order was done!",
+            html: htmlSender,
           });
         })
         .catch((err) => {

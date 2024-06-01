@@ -77,7 +77,7 @@ const RegisterPage = () => {
     if (!response.ok) {
       // console.log("!response.ok!");
       dispatch(
-        authSliceActions(
+        authSliceActions.errorMessageUpdate(
           data && data.message
             ? data.message
             : data && data.msg
@@ -87,7 +87,7 @@ const RegisterPage = () => {
       );
     } else {
       console.log("data post register:", data);
-      dispatch(authSliceActions(null));
+      dispatch(authSliceActions.errorMessageUpdate(null));
       dispatch(authSliceActions.emailUpdate(""));
       dispatch(authSliceActions.passwordUpdate(""));
       dispatch(authSliceActions.nameUpdate(""));
