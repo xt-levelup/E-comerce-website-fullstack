@@ -28,6 +28,7 @@ const CheckoutPage = () => {
   const [address, setAddress] = useState("");
   const [total, setTotal] = useState(null);
   const [order, setOrder] = useState(null);
+  const [orderMessage, setOrderMessage] = useState(null);
 
   useEffect(() => {
     dispatch(
@@ -205,6 +206,61 @@ const CheckoutPage = () => {
     convertToTotal();
   }, [cartData, productData, name, email, phone, address]);
 
+  const orderHandle = async () => {
+    const localStorageData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorageData && localStorageData.token;
+    const urlServer = "http://localhost:5000/userOrder";
+    const response = await fetch(urlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        order: order,
+      }),
+    });
+    const data = await response.json();
+    console.log("data orderHandle:", data);
+    if (!response.ok) {
+      if (
+        (data && data.message === "Wrong token!") ||
+        (data && data.message === "jwt expired") ||
+        (data && data.message === "jwt malformed")
+      ) {
+        dispatch(authSliceActions.errorMessageUpdate("Please login again!"));
+        localStorage.removeItem("user");
+        dispatch(authSliceActions.authorUpdate(null));
+      } else {
+        dispatch(
+          authSliceActions.errorMessageUpdate(
+            data && data.message
+              ? data.message
+              : data && data.msg
+              ? data.msg
+              : "Cannot order now! Maybe you lost internet!"
+          )
+        );
+      }
+    } else {
+      dispatch(authSliceActions.errorMessageUpdate(null));
+      dispatch(authSliceActions.cartToViewUpdate([]));
+      getCart();
+    }
+  };
+
+  const placeOrderButton = () => {
+    try {
+      orderHandle();
+    } catch (err) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          "Cannot order now! Please try again later!"
+        )
+      );
+    }
+  };
+
   useEffect(() => {
     console.log("errorMessage:", errorMessage);
   }, [errorMessage]);
@@ -278,7 +334,9 @@ const CheckoutPage = () => {
                   onChange={addressHandle}
                 />
               </div>
-              <button>Place order</button>
+              <button type="button" onClick={placeOrderButton}>
+                Place order
+              </button>
             </div>
           </div>
           <div className={styles["order-contain"]}>

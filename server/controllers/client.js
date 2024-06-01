@@ -2,6 +2,7 @@ const Message = require("../models/messageSession");
 const User = require("../models/user");
 const io = require("../socket");
 const Product = require("../models/product");
+const Order = require("../models/order");
 
 exports.getChatDataClient = (req, res, next) => {
   const userId = req.body.userId;
@@ -251,6 +252,58 @@ exports.updateCart = (req, res, next) => {
       console.log("err updateCart User.findById:", err);
       res.status(500).json({
         message: "Cannot update cart now! Please try again later!",
+      });
+    });
+};
+
+exports.userOrder = (req, res, next) => {
+  const order = req.body.order;
+
+  console.log("order:", order);
+
+  if (!order || !order.orderItems || !order.orderItems.length) {
+    res.status(403).json({
+      message: "No order to update!",
+    });
+    return;
+  }
+
+  const newOrder = new Order({
+    order: order,
+    userId: req.userId,
+    orderDate: new Date(),
+  });
+
+  newOrder
+    .save()
+    .then((result) => {
+      console.log("result newOrder.save():", result);
+      User.findById(req.userId)
+        .then((user) => {
+          if (!user) {
+            res.status(403).json({
+              message: "Cannot found your account!",
+            });
+            return;
+          }
+          return user.clearCart();
+        })
+        .then((result) => {
+          res.status(201).json({
+            message: "Your order was done!",
+          });
+        })
+        .catch((err) => {
+          console.log("err User.findById newOrder.save():", err);
+          res.status(500).json({
+            message: "Cannot order now! Please try again later!",
+          });
+        });
+    })
+    .catch((err) => {
+      console.log("err userOrder newOrder.save():", err);
+      res.status(500).json({
+        message: "Cannot order now! Please try again later!",
       });
     });
 };
