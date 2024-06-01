@@ -18,7 +18,7 @@ exports.checkToken = (req, res, next) => {
   } catch (err) {
     console.log("err decoded token:", err);
     res.status(500).json({
-      message: "Cannot complete your task now! Please login again!",
+      message: err.message,
     });
     return;
   }

@@ -44,6 +44,7 @@
     width:100%;
     display:flex;
     gap:2%;
+    justify-content: space-between;
     /* border:1px solid blue; */
 
 }
@@ -88,13 +89,15 @@
 .information button:hover{
     transition:transform 0.5s;
     transform: scale(1.1);
+    background-color: blue;
 }
 .information button:not(:hover){
     transition:transform 0.5s;
     transform: scale(1);
 }
 .order-contain{
-    width:32%;
+    min-width:300px;
+    max-width:32%;
     display:flex;
     align-items:flex-start;
 }
@@ -114,7 +117,8 @@
 
 }
 .order-item{
-    display:flex;
+    display:grid;
+    grid-template-columns:50% 50%;
     align-items:center;
-    justify-content:space-between;
+    /* justify-content:space-between; */
 }
