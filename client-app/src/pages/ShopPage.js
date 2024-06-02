@@ -1,38 +1,146 @@
 import { Helmet } from "react-helmet";
 import styles from "./ShopPage.module.css";
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
+import { authSliceActions } from "../store/auth";
 
 const ShopPage = () => {
   const [valueShow, setValueShow] = useState(null);
   const [pageNumber, setPageNumber] = useState("1");
+  const [navAction, setNavAction] = useState("all");
+  const [searchValue, setSearchValue] = useState("");
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const errorMessage = useSelector((state) => {
+    return state.authSlice.errorMessage;
+  });
+  const auth = useSelector((state) => {
+    return state.authSlice.auth;
+  });
+  const productData = useSelector((state) => {
+    return state.fetchProductsSlice.productData;
+  });
+
+  useEffect(() => {
+    try {
+      dispatch(fetchProductsSliceActions());
+    } catch (err) {
+      dispatch(
+        authSliceActions.errorMessageUpdate(
+          "Cannot get data now! Please try again later!"
+        )
+      );
+    }
+  }, []);
 
   const allHandle = () => {
     setValueShow("All");
+    setNavAction("all");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const iphoneHandle = () => {
     setValueShow("iPhone");
+    setNavAction("iPhone");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const ipadHandle = () => {
     setValueShow("iPad");
+    setNavAction("iPad");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const macbookHandle = () => {
     setValueShow("Macbook");
+    setNavAction("macbook");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const airpodHandle = () => {
-    setValueShow("Airpad");
+    setValueShow("Airpod");
+    setNavAction("airpod");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const watchHandle = () => {
     setValueShow("Watch");
+    setNavAction("watch");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const mouseHandle = () => {
     setValueShow("Mouse");
+    setNavAction("mouse");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const keyboardHandle = () => {
     setValueShow("Keyboard");
+    setNavAction("keyboard");
+    window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const otherHandle = () => {
     setValueShow("Other");
+    setNavAction("other");
+    window.scrollTo({ top: "450px", behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (navAction === "all") {
+      // console.log("productData:", productData);
+      setValueShow(productData);
+    } else if (navAction === "iPhone") {
+      const iphoneData = productData.filter((prod) => {
+        return prod.category === "iphone";
+      });
+      setValueShow(iphoneData);
+    } else if (navAction === "iPad") {
+      const ipadData = productData.filter((prod) => {
+        return prod.category === "ipad";
+      });
+      setValueShow(ipadData);
+    } else if (navAction === "macbook") {
+      const macbookData = productData.filter((prod) => {
+        return prod.category === "macbook";
+      });
+      setValueShow(macbookData);
+    } else if (navAction === "airpod") {
+      const airpodData = productData.filter((prod) => {
+        return prod.category === "airpod";
+      });
+      setValueShow(airpodData);
+    } else if (navAction === "watch") {
+      const watchData = productData.filter((prod) => {
+        return prod.category === "watch";
+      });
+      setValueShow(watchData);
+    } else if (navAction === "mouse") {
+      const mouseData = productData.filter((prod) => {
+        return prod.category === "mouse";
+      });
+      setValueShow(mouseData);
+    } else if (navAction === "keyboard") {
+      const keyboardData = productData.filter((prod) => {
+        return prod.category === "keyboard";
+      });
+      setValueShow(keyboardData);
+    } else if (navAction === "mouse") {
+      const mouseData = productData.filter((prod) => {
+        return prod.category === "mouse";
+      });
+      setValueShow(mouseData);
+    } else if (navAction === "keyboard") {
+      const keyboardData = productData.filter((prod) => {
+        return prod.category === "keyboard";
+      });
+      setValueShow(keyboardData);
+    } else if (navAction === "other") {
+      const otherData = productData.filter((prod) => {
+        return prod.category === "other";
+      });
+      setValueShow(otherData);
+    }
+  }, [navAction, productData]);
+
   const pageNumberInputHandle = (event) => {
     setPageNumber(event.target.value);
   };
@@ -50,6 +158,50 @@ const ShopPage = () => {
       setPageNumber(parseInt(pageNumber) + 1);
     }
   };
+
+  const clickProductHandle = (productId) => {
+    navigate(`/detail/${productId}`);
+  };
+
+  const searchValueHandle = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  useEffect(() => {
+    if (
+      productData &&
+      Array.isArray(productData) &&
+      productData.length > 0 &&
+      searchValue
+    ) {
+      const searchData = productData.filter((prod) => {
+        const lowerProdName = prod.name.toLowerCase();
+        const lowerSearch = searchValue.toLowerCase();
+        return lowerProdName.includes(lowerSearch);
+      });
+      setValueShow(searchData);
+      setNavAction(null);
+    }
+  }, [searchValue, productData]);
+
+  useEffect(() => {
+    console.log("productData:", productData);
+  }, [productData]);
+  useEffect(() => {
+    console.log("errorMessage:", errorMessage);
+  }, [errorMessage]);
+  useEffect(() => {
+    console.log("valueShow:", valueShow);
+  }, [valueShow]);
+  useEffect(() => {
+    console.log("pageNumber:", pageNumber);
+  }, [pageNumber]);
+  useEffect(() => {
+    console.log("navAction:", navAction);
+  }, [navAction]);
+  useEffect(() => {
+    console.log("searchValue:", searchValue);
+  }, [searchValue]);
 
   return (
     <div>
@@ -74,31 +226,135 @@ const ShopPage = () => {
               >
                 APPLE
               </h4>
-              <p onClick={allHandle}>All</p>
+              <p
+                onClick={allHandle}
+                className={
+                  navAction === "all" ? styles["action-nav"] : undefined
+                }
+              >
+                All
+              </p>
               <h4>IPHONE & MAC</h4>
-              <p onClick={iphoneHandle}>iPhone</p>
-              <p onClick={ipadHandle}>iPad</p>
-              <p onClick={macbookHandle}>Macbook</p>
+              <p
+                onClick={iphoneHandle}
+                className={
+                  navAction === "iPhone" ? styles["action-nav"] : undefined
+                }
+              >
+                iPhone
+              </p>
+              <p
+                onClick={ipadHandle}
+                className={
+                  navAction === "iPad" ? styles["action-nav"] : undefined
+                }
+              >
+                iPad
+              </p>
+              <p
+                onClick={macbookHandle}
+                className={
+                  navAction === "macbook" ? styles["action-nav"] : undefined
+                }
+              >
+                Macbook
+              </p>
               <h4>WIRELESS</h4>
-              <p onClick={airpodHandle}>Airpod</p>
-              <p onClick={watchHandle}>Watch</p>
+              <p
+                onClick={airpodHandle}
+                className={
+                  navAction === "airpod" ? styles["action-nav"] : undefined
+                }
+              >
+                Airpod
+              </p>
+              <p
+                onClick={watchHandle}
+                className={
+                  navAction === "watch" ? styles["action-nav"] : undefined
+                }
+              >
+                Watch
+              </p>
               <h4>OTHERS</h4>
-              <p onClick={mouseHandle}>Mouse</p>
-              <p onClick={keyboardHandle}>Keyboard</p>
-              <p onClick={otherHandle}>Other</p>
+              <p
+                onClick={mouseHandle}
+                className={
+                  navAction === "mouse" ? styles["action-nav"] : undefined
+                }
+              >
+                Mouse
+              </p>
+              <p
+                onClick={keyboardHandle}
+                className={
+                  navAction === "keyboard" ? styles["action-nav"] : undefined
+                }
+              >
+                Keyboard
+              </p>
+              <p
+                onClick={otherHandle}
+                className={
+                  navAction === "other" ? styles["action-nav"] : undefined
+                }
+              >
+                Other
+              </p>
             </div>
           </div>
           <div className={styles["products-show"]}>
             <div className={styles["products-search"]}>
-              <input type="text" placeholder="Enter Search Here!" />
+              <input
+                type="text"
+                placeholder="Enter Search Here!"
+                value={searchValue}
+                onChange={searchValueHandle}
+              />
               <select>
                 <option>Default sorting</option>
                 <option>Ascending</option>
                 <option>Decrease</option>
               </select>
             </div>
-            <div>
-              <p>{valueShow}</p>
+            <div
+              className={
+                valueShow && Array.isArray(valueShow) && valueShow.length > 0
+                  ? styles["show-content"]
+                  : undefined
+              }
+            >
+              {valueShow &&
+                Array.isArray(valueShow) &&
+                valueShow.length > 0 &&
+                valueShow.map((value) => {
+                  return (
+                    <div
+                      key={value._id}
+                      className={styles["value-show"]}
+                      onClick={() => clickProductHandle(value._id)}
+                    >
+                      <img
+                        src={`http://localhost:5000/${value.imageUrls[0]}`}
+                      />
+                      <h3>{value.name}</h3>
+                      <p>{value.price.toLocaleString("vi-VN")} VND</p>
+                    </div>
+                  );
+                })}
+              {!valueShow ||
+                (valueShow.length === 0 && (
+                  <p
+                    style={{
+                      textAlign: "center",
+                      fontWeight: "600",
+                      fontSize: "24px",
+                      margin: "3em 0",
+                    }}
+                  >
+                    Under updating products...
+                  </p>
+                ))}
             </div>
             <div className={styles["products-pages"]}>
               <svg
