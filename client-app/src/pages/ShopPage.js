@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 
 import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/auth";
+import { navSliceActions } from "../store/nav";
 
 const ShopPage = () => {
   const [valueShow, setValueShow] = useState(null);
   const [pageNumber, setPageNumber] = useState("1");
-  const [navAction, setNavAction] = useState("all");
+  // const [navAction, setNavAction] = useState("all");
   const [searchValue, setSearchValue] = useState("");
 
   const dispatch = useDispatch();
@@ -24,6 +25,9 @@ const ShopPage = () => {
   });
   const productData = useSelector((state) => {
     return state.fetchProductsSlice.productData;
+  });
+  const navAction = useSelector((state) => {
+    return state.navSlice.navAction;
   });
 
   useEffect(() => {
@@ -40,47 +44,56 @@ const ShopPage = () => {
 
   const allHandle = () => {
     setValueShow("All");
-    setNavAction("all");
+    // setNavAction("all");
+    dispatch(navSliceActions.navActionUpdate("all"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const iphoneHandle = () => {
     setValueShow("iPhone");
-    setNavAction("iPhone");
+    // setNavAction("iPhone");
+    dispatch(navSliceActions.navActionUpdate("iPhone"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const ipadHandle = () => {
     setValueShow("iPad");
-    setNavAction("iPad");
+    // setNavAction("iPad");
+    dispatch(navSliceActions.navActionUpdate("iPad"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const macbookHandle = () => {
     setValueShow("Macbook");
-    setNavAction("macbook");
+    // setNavAction("macbook");
+    dispatch(navSliceActions.navActionUpdate("macbook"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const airpodHandle = () => {
     setValueShow("Airpod");
-    setNavAction("airpod");
+    // setNavAction("airpod");
+    dispatch(navSliceActions.navActionUpdate("airpod"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const watchHandle = () => {
     setValueShow("Watch");
-    setNavAction("watch");
+    // setNavAction("watch");
+    dispatch(navSliceActions.navActionUpdate("watch"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const mouseHandle = () => {
     setValueShow("Mouse");
-    setNavAction("mouse");
+    // setNavAction("mouse");
+    dispatch(navSliceActions.navActionUpdate("mouse"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const keyboardHandle = () => {
     setValueShow("Keyboard");
-    setNavAction("keyboard");
+    // setNavAction("keyboard");
+    dispatch(navSliceActions.navActionUpdate("keyboard"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const otherHandle = () => {
     setValueShow("Other");
-    setNavAction("other");
+    // setNavAction("other");
+    dispatch(navSliceActions.navActionUpdate("other"));
     window.scrollTo({ top: "450px", behavior: "smooth" });
   };
 
@@ -176,11 +189,16 @@ const ShopPage = () => {
     ) {
       const searchData = productData.filter((prod) => {
         const lowerProdName = prod.name.toLowerCase();
+        const lowerProdCategory = prod.category.toLowerCase();
         const lowerSearch = searchValue.toLowerCase();
-        return lowerProdName.includes(lowerSearch);
+        return (
+          lowerProdName.includes(lowerSearch) ||
+          lowerProdCategory.includes(lowerSearch)
+        );
       });
       setValueShow(searchData);
-      setNavAction(null);
+      // setNavAction(null);
+      dispatch(navSliceActions.navActionUpdate(""));
     }
   }, [searchValue, productData]);
 
