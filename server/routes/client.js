@@ -46,5 +46,11 @@ router.post(
   authCheck.checkToken,
   clientControllers.userOrder
 );
+router.post("/getOrder", authCheck.checkToken, clientControllers.getOrder);
+router.post(
+  "/orderDetail",
+  authCheck.checkToken,
+  clientControllers.orderDetail
+);
 
 module.exports = router;

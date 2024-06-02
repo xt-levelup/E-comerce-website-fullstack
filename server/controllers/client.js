@@ -388,3 +388,56 @@ exports.userOrder = (req, res, next) => {
       });
     });
 };
+
+exports.getOrder = (req, res, next) => {
+  User.findById(req.userId)
+    .then((user) => {
+      if (!user) {
+        res.status(403).json({
+          message: "Cannot found your account! Please try again later!",
+        });
+        return;
+      }
+      Order.find({ userId: req.userId })
+        .then((orders) => {
+          res.status(200).json(orders);
+        })
+        .catch((err) => {
+          console.log("err Order.findOne getOrder:", err);
+          res.status(500).json({
+            message: "Something went wrong! Please try again later!",
+          });
+        });
+    })
+    .catch((err) => {
+      console.log("err User.findById() getOrder:", err);
+      res.status(500).json({
+        message: "Something went wrong! Please try again later!",
+      });
+    });
+};
+
+exports.orderDetail = (req, res, next) => {
+  const orderId = req.body.orderId;
+
+  if (!orderId) {
+    res.status(404).json({
+      message: "Nothing here!",
+    });
+    return;
+  }
+
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        res.status(404).json({
+          message: "This order not found!",
+        });
+        return;
+      }
+      res.status(200).json(order);
+    })
+    .catch((err) => {
+      console.log("err orderDetail Order.findById:", err);
+    });
+};

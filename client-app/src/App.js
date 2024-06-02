@@ -29,6 +29,12 @@ const RegisterPage = lazy(() => {
 const ShopPage = lazy(() => {
   return import("./pages/ShopPage.js");
 });
+const HistoryPage = lazy(() => {
+  return import("./pages/HistoryPage.js");
+});
+const HistoryDetail = lazy(() => {
+  return import("./pages/HistoryDetail.js");
+});
 
 const App = () => {
   const loading = (
@@ -97,6 +103,22 @@ const App = () => {
           element: (
             <Suspense fallback={loading}>
               <DetailPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "history",
+          element: (
+            <Suspense fallback={loading}>
+              <HistoryPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: "history-detail/:orderId",
+          element: (
+            <Suspense fallback={loading}>
+              <HistoryDetail />
             </Suspense>
           ),
         },

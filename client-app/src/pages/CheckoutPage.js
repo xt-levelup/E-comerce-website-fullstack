@@ -243,21 +243,13 @@ const CheckoutPage = () => {
             ? data.msg
             : "Cannot order now! Maybe you lost internet!"
         );
-        // dispatch(
-        //   authSliceActions.errorMessageUpdate(
-        //     data && data.message
-        //       ? data.message
-        //       : data && data.msg
-        //       ? data.msg
-        //       : "Cannot order now! Maybe you lost internet!"
-        //   )
-        // );
       }
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       dispatch(authSliceActions.cartToViewUpdate([]));
       setErrorOrder(null);
       getCart();
+      navigate("/history");
     }
   };
 
