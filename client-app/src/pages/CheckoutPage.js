@@ -28,7 +28,7 @@ const CheckoutPage = () => {
   const [address, setAddress] = useState("");
   const [total, setTotal] = useState(null);
   const [order, setOrder] = useState(null);
-  const [orderMessage, setOrderMessage] = useState(null);
+  const [errorOrder, setErrorOrder] = useState(null);
 
   useEffect(() => {
     dispatch(
@@ -218,6 +218,10 @@ const CheckoutPage = () => {
       },
       body: JSON.stringify({
         order: order,
+        email: email,
+        name: name,
+        phone: phone,
+        address: address,
       }),
     });
     const data = await response.json();
@@ -232,19 +236,27 @@ const CheckoutPage = () => {
         localStorage.removeItem("user");
         dispatch(authSliceActions.authorUpdate(null));
       } else {
-        dispatch(
-          authSliceActions.errorMessageUpdate(
-            data && data.message
-              ? data.message
-              : data && data.msg
-              ? data.msg
-              : "Cannot order now! Maybe you lost internet!"
-          )
+        setErrorOrder(
+          data && data.message
+            ? data.message
+            : data && data.msg
+            ? data.msg
+            : "Cannot order now! Maybe you lost internet!"
         );
+        // dispatch(
+        //   authSliceActions.errorMessageUpdate(
+        //     data && data.message
+        //       ? data.message
+        //       : data && data.msg
+        //       ? data.msg
+        //       : "Cannot order now! Maybe you lost internet!"
+        //   )
+        // );
       }
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       dispatch(authSliceActions.cartToViewUpdate([]));
+      setErrorOrder(null);
       getCart();
     }
   };
@@ -338,6 +350,7 @@ const CheckoutPage = () => {
                 Place order
               </button>
             </div>
+            {errorOrder && <p style={{ color: "red" }}>{errorOrder}</p>}
           </div>
           <div className={styles["order-contain"]}>
             <div className={styles.order}>

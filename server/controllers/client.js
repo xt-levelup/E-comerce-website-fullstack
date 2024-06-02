@@ -5,6 +5,7 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const nodemailer = require("nodemailer");
 const senGridTransport = require("nodemailer-sendgrid-transport");
+const { validationResult } = require("express-validator");
 
 const transporter = nodemailer.createTransport(
   senGridTransport({
@@ -268,37 +269,71 @@ exports.updateCart = (req, res, next) => {
 
 exports.userOrder = (req, res, next) => {
   const order = req.body.order;
+  const localDate = new Date();
+
+  const day = localDate.getDate().toString().padStart(2, "0");
+  const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
+  const year = localDate.getFullYear();
+  const hours = localDate.getHours().toString().padStart(2, "0");
+  const minutes = localDate.getMinutes().toString().padStart(2, "0");
+  const seconds = localDate.getSeconds().toString().padStart(2, "0");
+
+  const orderDate = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+
+  const errors = validationResult(req);
+  const htmlLoop =
+    order &&
+    order.orderItems.length > 0 &&
+    order.orderItems.map((item) => {
+      return `
+<tr>          
+  <td style="font-size:18px;">${item.currentProd.name}</td>          
+  <td style="font-size:18px;"><img src="http://localhost:5000/${
+    item.currentProd.imageUrls[0]
+  }" style="object-fit:fill; width:100%; height:100%;" alt="${
+        item.currentProd.name
+      }"></td>
+  <!-- <td style="font-size:18px;"><img src="http://localhost:5000/images/1716909526355-173090586-watch_1_4.jpeg" style="object-fit:fill; width:100%; height:100%;" alt="${
+    item.currentProd.name
+  }"></td> -->
+  <td style="font-size:18px;">${item.currentProd.price.toLocaleString(
+    "vi-VN"
+  )} VND</td>          
+  <td style="font-size:18px;">${item.quantity}</td>          
+  <td style="font-size:18px;">${item.totalPrice} VND</td>
+</tr>
+`;
+    });
+
   const htmlSender = `
-    <h1>Hi: ${order.email}<h1>    
-      <p style="font-size:12px;" >Address: ${order.address}</p>
-      <p style="font-size:12px;" >Phone number: ${order.phone}</p>
-      <p style="font-size:12px;" >Name: ${order.name}</p>    
-    <table border="1" style="font-size:12px;" >
+    <h1>Hi: ${order.name}<h1>    
+      <p style="font-size:12px;" >Địa chỉ: ${order.address}</p>
+      <p style="font-size:12px;" >SĐT: ${order.phone}</p>          
+    <table border="1" >
       <tr>
-          <th>Product Name</th>
-          <th>Image</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Total</th>
+          <th style="font-size:12px;">Tên sản phẩm</th>
+          <th style="font-size:12px;">Hình ảnh</th>
+          <th style="font-size:12px;">Đơn giá</th>
+          <th style="font-size:12px;">Số lượng</th>
+          <th style="font-size:12px;">Thành tiền</th>
       </tr>
-      ${
-        order &&
-        order.orderItems.length > 0 &&
-        order.orderItems.map((item) => {
-          return ` <tr>          
-        <td>${item.currentProd.name}</td>          
-        <td><img src="http://localhost:5000/${item.currentProd.imageUrls[0]}" style="object-fit:fill; width:100%; height:100%;" alt="${item.currentProd.name}"></td>
-        <!-- <td><img src="http://localhost:5000/images/1716909526355-173090586-watch_1_4.jpeg" style="object-fit:fill; width:100%; height:100%;" alt="${item.currentProd.name}"></td> -->
-        <td>${item.currentProd.price} VND</td>          
-        <td>${item.quantity}</td>          
-        <td>${item.totalPrice} VND</td>
-    </tr>`;
-        })
-      }      
+      ${htmlLoop.join("")} 
     </table>
+    <h2 style="font-size:21px;">Tổng thanh toán:</h2>
+    <p style="font-size:21px;">${order.orderPrice.toLocaleString(
+      "vi-VN"
+    )} VND</p>
+    <p style="font-size:18px;">Ngày đặt hàng: ${orderDate}</p>
+    <h4 style="font-size:18px;">Cảm ơn bạn!</h4>
   `;
 
   console.log("order:", order);
+  console.log("errors:", errors);
+
+  if (!errors.isEmpty()) {
+    res.status(422).json(errors.array()[0]);
+    return;
+  }
 
   if (!order || !order.orderItems || !order.orderItems.length) {
     res.status(403).json({
