@@ -30,6 +30,8 @@ const AddProductPage = () => {
   const [shortDesc, setShortDesc] = useState("");
   const [longDesc, setLongDesc] = useState("");
   const [images, setImages] = useState(null);
+  const [initQuantity, setInitQuantity] = useState(0);
+  const [inventoryQuantity, setInventoryQuantity] = useState(0);
   // const [imageUploadMaxError,setImageUploadMaxError]=useState(null);
   // const [images, setImages] = useState([]);
 
@@ -45,9 +47,12 @@ const AddProductPage = () => {
   }, []);
   useEffect(() => {
     if (productId) {
-      const editData = productData.find((product) => {
-        return product._id.toString() === productId.toString();
-      });
+      const editData =
+        productData &&
+        Array.isArray(productData) &&
+        productData.find((product) => {
+          return product._id.toString() === productId.toString();
+        });
       console.log("editData:", editData);
       if (editData) {
         setName(editData.name);
@@ -55,6 +60,8 @@ const AddProductPage = () => {
         setCategory(editData.category);
         setShortDesc(editData.short_desc);
         setLongDesc(editData.long_desc);
+        setInitQuantity(editData.initQuantity);
+        setInventoryQuantity(editData.inventoryQuantity);
       }
     }
   }, [productData]);
@@ -73,6 +80,12 @@ const AddProductPage = () => {
   };
   const longDescHandle = (event) => {
     setLongDesc(event.target.value);
+  };
+  const initQuantityHandle = (event) => {
+    setInitQuantity(event.target.value);
+  };
+  const inventoryQuantityHandle = (event) => {
+    setInventoryQuantity(event.target.value);
   };
 
   const imagesHandle = (event) => {
@@ -98,6 +111,8 @@ const AddProductPage = () => {
     formData.append("category", category);
     formData.append("shortDesc", shortDesc);
     formData.append("longDesc", longDesc);
+    formData.append("initQuantity", initQuantity);
+    formData.append("inventoryQuantity", inventoryQuantity);
     formData.append("userId", userId);
     formData.append("productId", productId);
 
@@ -110,7 +125,7 @@ const AddProductPage = () => {
 
     if (images && images.length) {
       for (let i = 0; i < images.length; i++) {
-        console.log(`images${i}:`, images[i]);
+        // console.log(`images${i}:`, images[i]);
         formData.append("imageFiles", images[i]);
       }
     }
@@ -138,7 +153,7 @@ const AddProductPage = () => {
           )
         );
       } else if (data && data.message === "Not authorized!") {
-        localStorage.removeItem("userData");
+        // localStorage.removeItem("userData");
         dispatch(authSliceActions.localStorageDataUpdate(null));
         dispatch(
           authSliceActions.errorMessageUpdate(
@@ -206,6 +221,12 @@ const AddProductPage = () => {
   useEffect(() => {
     console.log("productData", productData);
   }, [productData]);
+  useEffect(() => {
+    console.log("initQuantity", initQuantity);
+  }, [initQuantity]);
+  useEffect(() => {
+    console.log("inventoryQuantity", inventoryQuantity);
+  }, [inventoryQuantity]);
 
   return (
     <div className={styles.contain}>
@@ -308,12 +329,14 @@ const AddProductPage = () => {
           />
         </div>
         <div>
-          <label>Quantity In Store</label>
+          <label>Init Quantity</label>
           <input
             type="number"
             min="1"
             style={{ width: "210px", textAlign: "center" }}
-            placeholder="Quantity in store"
+            placeholder="Init Quantity"
+            value={initQuantity}
+            onChange={initQuantityHandle}
           />
         </div>
         <div>
@@ -323,9 +346,10 @@ const AddProductPage = () => {
             min="1"
             style={{ width: "210px", textAlign: "center" }}
             placeholder="Inventory Quantity"
+            value={inventoryQuantity}
+            onChange={inventoryQuantityHandle}
           />
         </div>
-
         <button type="button" onClick={addProductHandle}>
           Submit
         </button>

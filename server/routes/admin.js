@@ -32,6 +32,19 @@ router.post(
     ).isLength({
       min: 3,
     }),
+    body("initQuantity", "Please enter a Init Quantity with a number!")
+      .isLength({
+        min: 1,
+      })
+      .isNumeric(),
+    body(
+      "inventoryQuantity",
+      "Please enter a Inventory Quantity with a number!"
+    )
+      .isLength({
+        min: 1,
+      })
+      .isNumeric(),
   ],
 
   adminControllers.addProduct
