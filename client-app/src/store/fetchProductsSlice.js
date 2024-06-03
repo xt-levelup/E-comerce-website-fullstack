@@ -8,11 +8,29 @@ export const fetchProductsSliceActions = createAsyncThunk(
       const response = await fetch(urlServer);
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(
-          data && data.message
-            ? data.message
-            : "Something went wrong under getting products!"
-        );
+        if (
+          (data && data.message === "Wrong token!") ||
+          (data && data.message === "jwt expired") ||
+          (data && data.message === "jwt malformed")
+        ) {
+          // dispatch(authSliceActions.errorMessageUpdate("Please login again!"));
+          localStorage.removeItem("user");
+          throw new Error("Please login again!");
+          // dispatch(authSliceActions.authorUpdate(null));
+        } else {
+          throw new Error(
+            data && data.message
+              ? data.message
+              : data && data.msg
+              ? data.msg
+              : "Cannot get data now! Maybe you lost internet!"
+          );
+        }
+        // throw new Error(
+        //   data && data.message
+        //     ? data.message
+        //     : "Something went wrong under getting products!"
+        // );
       } else {
         return data;
       }

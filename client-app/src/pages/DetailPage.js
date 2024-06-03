@@ -21,6 +21,7 @@ const DetailPage = () => {
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
+  const [detailPageErrorMessage, setDetailPageErrorMessage] = useState(null);
 
   const productId = params.productId;
 
@@ -51,6 +52,20 @@ const DetailPage = () => {
     }
   }, [productView]);
 
+  useEffect(() => {
+    if (
+      errorMessage === "Wrong token!" ||
+      errorMessage === "jwt expired" ||
+      errorMessage === "jwt malformed"
+    ) {
+      setDetailPageErrorMessage("Please login again to complete your wish!");
+      localStorage.removeItem("user");
+      dispatch(authSliceActions.authorUpdate(null));
+    } else {
+      setDetailPageErrorMessage(errorMessage);
+    }
+  }, [errorMessage]);
+
   const cartNumberInputHandle = (event) => {
     setCartNumber(event.target.value);
   };
@@ -69,6 +84,8 @@ const DetailPage = () => {
       setCartNumber(parseInt(cartNumber) + 1);
     }
   };
+
+  window.scrollTo({ top: 100, behavior: "smooth" });
 
   const clickImageRealative = (currentProduct) => {
     setProductView(currentProduct);
@@ -200,7 +217,7 @@ const DetailPage = () => {
                   </div>
                   <button onClick={addToCartHandle}>Add To Cart</button>
                 </div>
-                {errorMessage && (
+                {detailPageErrorMessage && (
                   <div>
                     <p
                       style={{
@@ -212,7 +229,7 @@ const DetailPage = () => {
                         navigate("/login");
                       }}
                     >
-                      {errorMessage}
+                      {detailPageErrorMessage}
                     </p>
                   </div>
                 )}

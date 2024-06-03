@@ -40,6 +40,7 @@ const ShopPage = () => {
         )
       );
     }
+    window.scrollTo({ top: 300, behavior: "smooth" });
   }, []);
 
   const allHandle = () => {
@@ -233,7 +234,7 @@ const ShopPage = () => {
         </div>
         <div className={styles.products}>
           <div>
-            <h2>CATEGORIES</h2>
+            <h2 className={styles["max-700"]}>CATEGORIES</h2>
             <div className={styles["products-nav"]}>
               <h4
                 style={{
@@ -241,6 +242,7 @@ const ShopPage = () => {
                   padding: "1em",
                   color: "white",
                 }}
+                className={styles["max-700"]}
               >
                 APPLE
               </h4>
@@ -252,7 +254,7 @@ const ShopPage = () => {
               >
                 All
               </p>
-              <h4>IPHONE & MAC</h4>
+              <h4 className={styles["max-700"]}>IPHONE & MAC</h4>
               <p
                 onClick={iphoneHandle}
                 className={
@@ -277,7 +279,7 @@ const ShopPage = () => {
               >
                 Macbook
               </p>
-              <h4>WIRELESS</h4>
+              <h4 className={styles["max-700"]}>WIRELESS</h4>
               <p
                 onClick={airpodHandle}
                 className={
@@ -294,7 +296,7 @@ const ShopPage = () => {
               >
                 Watch
               </p>
-              <h4>OTHERS</h4>
+              <h4 className={styles["max-700"]}>OTHERS</h4>
               <p
                 onClick={mouseHandle}
                 className={
@@ -329,7 +331,7 @@ const ShopPage = () => {
                 value={searchValue}
                 onChange={searchValueHandle}
               />
-              <select>
+              <select className={styles["max-700"]}>
                 <option>Default sorting</option>
                 <option>Ascending</option>
                 <option>Decrease</option>

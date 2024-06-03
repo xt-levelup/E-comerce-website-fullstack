@@ -125,9 +125,13 @@ const HistoryDetail = () => {
                     </div>
                     <div>{prod.currentProd.name}</div>
                     <div>
+                      <span>Price:</span>
                       {prod.currentProd.price.toLocaleString("vi-VN")} VND
                     </div>
-                    <div>{prod.quantity}</div>
+                    <div>
+                      <span>Quantity:</span>
+                      {prod.quantity}
+                    </div>
                   </div>
                 );
               })}

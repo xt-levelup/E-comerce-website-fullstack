@@ -13,6 +13,9 @@ const HistoryPage = () => {
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
+  const author = useSelector((state) => {
+    return state.authSlice.author;
+  });
 
   const [orders, setOrders] = useState([]);
   const [errorHistory, setErrorHistory] = useState(null);
@@ -63,7 +66,11 @@ const HistoryPage = () => {
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setErrorHistory(null);
-      setOrders(data);
+      const newData = data.slice().sort((a, b) => {
+        return b.orderDate.localeCompare(a.orderDate);
+      });
+      console.log("newData:", newData);
+      setOrders(newData);
     }
   };
 
@@ -80,6 +87,9 @@ const HistoryPage = () => {
   useEffect(() => {
     console.log("orders:", orders);
   }, [orders]);
+  useEffect(() => {
+    console.log("author:", author);
+  }, [author]);
 
   return (
     <div className={styles.contain}>
@@ -93,30 +103,53 @@ const HistoryPage = () => {
       <div className={styles.content}>
         <div className={styles.header}>
           <div>ID Order</div>
-          <div>ID User</div>
-          <div>Name</div>
-          <div>Phone</div>
-          <div>Address</div>
-          <div>Total</div>
-          <div>Delevery</div>
-          <div>Status</div>
-          <div>Detail</div>
+          <div className={styles["max-1999-remove-header"]}>ID User</div>
+          <div className={styles["max-1999-remove-header"]}>Name</div>
+          <div className={styles["max-1999-remove-header"]}>Phone</div>
+          <div className={styles["max-1999-remove-header"]}>Address</div>
+          <div className={styles["header-max-1999"]}>Total</div>
+          <div className={styles["header-max-1999"]}>Delevery</div>
+          <div className={styles["header-max-1999"]}>Status</div>
+          <div className={styles["header-max-1999"]}>Detail</div>
         </div>
-        {orders &&
+        {author &&
+          orders &&
           orders.length > 0 &&
           orders.map((order) => {
             return (
               <div key={order._id} className={styles.list}>
-                <div>{order._id}</div>
-                <div>{order.userId}</div>
-                <div>{order.order.name}</div>
-                <div>{order.order.phone}</div>
-                <div>{order.order.address}</div>
-                <div>{order.order.orderPrice.toLocaleString("vi-VN")} VND</div>
-                <div>Waiting for progressing</div>
-                <div>Waiting for pay</div>
+                <div className={styles["list-max-1999"]}>
+                  <span>Order ID: </span>
+                  {order._id}
+                </div>
+                <div className={styles["max-1999-remove"]}>
+                  <span>Order User: </span>
+                  {order.userId}
+                </div>
+                <div className={styles["max-1999-remove"]}>
+                  <span>Name: </span>
+                  {order.order.name}
+                </div>
+                <div className={styles["max-1999-remove"]}>
+                  <span>Phone: </span>
+                  {order.order.phone}
+                </div>
+                <div className={styles["max-1999-remove"]}>
+                  <span>Address: </span>
+                  {order.order.address}
+                </div>
+                <div className={styles["list-max-1999"]}>
+                  <span>Order Price: </span>
+                  {order.order.orderPrice.toLocaleString("vi-VN")} VND
+                </div>
+                <div className={styles["list-max-1999"]}>
+                  <span>Shipping: </span>Waiting for progressing
+                </div>
+                <div className={styles["list-max-1999"]}>
+                  <span>Payment: </span>Waiting for pay
+                </div>
                 <button onClick={() => viewHandle(order._id)}>
-                  <span>View</span>
+                  <p>View</p>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

@@ -7,6 +7,7 @@ import openSocket from "socket.io-client";
 
 import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/auth";
+import { navSliceActions } from "../store/nav";
 import iphone from "../images/product_1.png";
 import mac from "../images/product_2.png";
 import ipad from "../images/product_3.png";
@@ -27,6 +28,9 @@ const HomePage = () => {
   });
   const productData = useSelector((state) => {
     return state.fetchProductsSlice.productData;
+  });
+  const navAction = useSelector((state) => {
+    return state.navSlice.navAction;
   });
 
   const [boxShow, setBoxShow] = useState(false);
@@ -235,6 +239,27 @@ const HomePage = () => {
     console.log("boxShow:", boxShow);
   }, [boxShow]);
 
+  const iphoneNavigation = () => {
+    dispatch(navSliceActions.navActionUpdate("iPhone"));
+    navigate("/shop");
+  };
+  const ipadNavigation = () => {
+    dispatch(navSliceActions.navActionUpdate("iPad"));
+    navigate("/shop");
+  };
+  const macbookNavigation = () => {
+    dispatch(navSliceActions.navActionUpdate("macbook"));
+    navigate("/shop");
+  };
+  const watchNavigation = () => {
+    dispatch(navSliceActions.navActionUpdate("watch"));
+    navigate("/shop");
+  };
+  const airpodNavigation = () => {
+    dispatch(navSliceActions.navActionUpdate("airpod"));
+    navigate("/shop");
+  };
+
   const imageClickDataHandle = (product) => {
     setImageClickData(product);
   };
@@ -269,6 +294,9 @@ const HomePage = () => {
   useEffect(() => {
     console.log("userId:", userId);
   }, [userId]);
+  useEffect(() => {
+    console.log("navAction:", navAction);
+  }, [navAction]);
 
   return (
     <div>
@@ -278,7 +306,7 @@ const HomePage = () => {
       <div className={styles.banner}>
         <div className={styles.adverse}>
           <h4>NEW INSPIRATION 2024</h4>
-          <h2>20% OFF ON NEW SEASON</h2>
+          <h2 style={{ color: "darkblue" }}>20% OFF ON NEW SEASON</h2>
           <button onClick={browseCollectionButton}>Browse collections</button>
         </div>
       </div>
@@ -287,21 +315,21 @@ const HomePage = () => {
         <h3>BROWSE OUR CATEGORIES</h3>
         <div className={styles["categories-01"]}>
           <div className={styles["categories-image"]}>
-            <img src={iphone} alt="product_1.png" onClick={imageNavigation} />
+            <img src={iphone} alt="product_1.png" onClick={iphoneNavigation} />
           </div>
           <div className={styles["categories-image"]}>
-            <img src={mac} alt="product_2.png" onClick={imageNavigation} />
+            <img src={mac} alt="product_2.png" onClick={macbookNavigation} />
           </div>
         </div>
         <div className={styles["categories-02"]}>
           <div className={styles["categories-image"]}>
-            <img src={ipad} alt="product_3.png" onClick={imageNavigation} />
+            <img src={ipad} alt="product_3.png" onClick={ipadNavigation} />
           </div>
           <div className={styles["categories-image"]}>
-            <img src={watch} alt="product_4.png" onClick={imageNavigation} />
+            <img src={watch} alt="product_4.png" onClick={watchNavigation} />
           </div>
           <div className={styles["categories-image"]}>
-            <img src={airpod} alt="product_5.png" onClick={imageNavigation} />
+            <img src={airpod} alt="product_5.png" onClick={airpodNavigation} />
           </div>
         </div>
       </div>
@@ -344,7 +372,7 @@ const HomePage = () => {
         </div>
       </div>
       <div className={styles["advise-register"]}>
-        <div>
+        <div className={styles.friend}>
           <h2>LET'S BE FRIEND!</h2>
           <p>Register now for favors</p>
         </div>

@@ -363,14 +363,24 @@ const CartPage = () => {
           <div className={styles.detail}>
             <div className={styles.list}>
               <div
-                className={styles["list-items"]}
+                className={styles["list-header"]}
                 style={{ backgroundColor: "rgb(220 220 220)", padding: "1em" }}
               >
                 <h4 style={{ textAlign: "center" }}>IMAGE</h4>
                 <h4 style={{ textAlign: "center" }}>PRODUCT</h4>
-                <h4 style={{ textAlign: "center" }}>PRICE</h4>
+                <h4
+                  style={{ textAlign: "center" }}
+                  className={styles["max-800-remove"]}
+                >
+                  PRICE
+                </h4>
                 <h4 style={{ textAlign: "center" }}>QUANTITY</h4>
-                <h4 style={{ textAlign: "center" }}>TOTAL</h4>
+                <h4
+                  style={{ textAlign: "center" }}
+                  className={styles["max-800-remove"]}
+                >
+                  TOTAL
+                </h4>
                 <h4 style={{ textAlign: "center" }}>REMOVE</h4>
               </div>
               {cartToView &&
@@ -389,7 +399,10 @@ const CartPage = () => {
                       <h4 style={{ textAlign: "center" }}>
                         {product.product.name}
                       </h4>
-                      <p style={{ textAlign: "center" }}>
+                      <p
+                        style={{ textAlign: "center" }}
+                        className={styles["max-800-remove"]}
+                      >
                         {product.product.price.toLocaleString("vi-VN")} VND
                       </p>
                       <div
@@ -423,7 +436,7 @@ const CartPage = () => {
                             style={{
                               width: "36px",
                               height: "24px",
-                              textAlign: "right",
+                              // textAlign: "right",
                             }}
                             // value={cartNumber}
                             // onChange={cartNumberInputHandle}
@@ -446,7 +459,10 @@ const CartPage = () => {
                           </svg>
                         </div>
                       </div>
-                      <p style={{ textAlign: "center" }}>
+                      <p
+                        style={{ textAlign: "center" }}
+                        className={styles["max-800-remove"]}
+                      >
                         {(
                           product.product.price * product.item.quantity
                         ).toLocaleString("vi-VN")}{" "}

@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 
@@ -7,12 +7,15 @@ import { authSliceActions } from "../store/auth";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
 
   const [emailName, setEmailName] = useState(null);
+  const [selectItem, setSelectItem] = useState("");
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -30,9 +33,33 @@ const MainLayout = () => {
     dispatch(authSliceActions.authorUpdate(null));
   };
 
+  const showMoreHandle = () => {
+    setShowMore(!showMore);
+  };
+
+  const toCartHandle = () => {
+    navigate("/cart");
+    setShowMore(false);
+  };
+  const toHistoryHandle = () => {
+    navigate("/history");
+    setShowMore(false);
+  };
+
+  useEffect(() => {
+    if (selectItem === "Cart") {
+      navigate("/cart");
+    } else if (selectItem === "History") {
+      navigate("/history");
+    }
+  }, [selectItem]);
+
   useEffect(() => {
     console.log("emailName:", emailName);
   }, [emailName]);
+  useEffect(() => {
+    console.log("selectItem:", selectItem);
+  }, [selectItem]);
 
   return (
     <div>
@@ -57,58 +84,66 @@ const MainLayout = () => {
               Shop
             </NavLink>
           </div>
-          <div>
+          <div className={styles.boutique}>
             <h2>BOUTIQUE</h2>
           </div>
           <div className={styles.right}>
-            <NavLink
-              to="/cart"
-              className={({ isActive }) => {
-                return isActive ? styles.active : undefined;
-              }}
-            >
-              <span className={styles.icon}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="w-6 h-6"
+            {author && (
+              <div className={styles["max-600"]}>
+                <NavLink
+                  to="/cart"
+                  className={({ isActive }) => {
+                    return isActive ? styles.active : undefined;
+                  }}
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                  />
-                </svg>
-                Cart
-              </span>
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) => {
-                return isActive ? styles.active : undefined;
-              }}
-            >
-              <span className={styles.icon}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="size-6"
+                  <span className={styles.icon}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-6 h-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                      />
+                    </svg>
+                    Cart
+                  </span>
+                </NavLink>
+              </div>
+            )}
+            {author && (
+              <div className={styles["max-600"]}>
+                <NavLink
+                  to="/history"
+                  className={({ isActive }) => {
+                    return isActive ? styles.active : undefined;
+                  }}
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
-                  />
-                </svg>
-                History
-              </span>
-            </NavLink>
+                  <span className={styles.icon}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+                      />
+                    </svg>
+                    History
+                  </span>
+                </NavLink>
+              </div>
+            )}
             {!author && (
               <NavLink
                 to="/login"
@@ -161,7 +196,40 @@ const MainLayout = () => {
                 </span>
               </NavLink>
             )}
-            {author && <h3>{emailName}</h3>}
+            {author && <h3 className={styles["max-600"]}>{emailName}</h3>}
+            {author && (
+              <div className={styles["show-max-600"]}>
+                <h3
+                  onClick={showMoreHandle}
+                  style={{ display: "flex", alignItems: "center", gap: "3px" }}
+                >
+                  {emailName}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                    width="18px"
+                    height="18px"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+
+                  {showMore && (
+                    <div className={styles["show-more"]}>
+                      <p onClick={toCartHandle}>Cart</p>
+                      <p onClick={toHistoryHandle}>History</p>
+                    </div>
+                  )}
+                </h3>
+              </div>
+            )}
             {author && (
               <button type="button" onClick={logoutHandle}>
                 Logout
@@ -176,24 +244,30 @@ const MainLayout = () => {
       <div className={styles.footer}>
         <div className={styles["footer-part"]}>
           <h3>CUSTOMER SERVICES</h3>
-          <a href="#">Help & Contact Us</a>
-          <a href="#">Returns & Refunds</a>
-          <a href="#">Online Stores</a>
-          <a href="#">Terms & Conditions</a>
+          <div className={styles["footer-link"]}>
+            <a href="#">Help & Contact Us</a>
+            <a href="#">Returns & Refunds</a>
+            <a href="#">Online Stores</a>
+            <a href="#">Terms & Conditions</a>
+          </div>
         </div>
         <div className={styles["footer-part"]}>
           <h3>COMPANY</h3>
-          <a href="#">What We Do</a>
-          <a href="#">Available Services</a>
-          <a href="#">Latest Posts</a>
-          <a href="#">FAQs</a>
+          <div className={styles["footer-link"]}>
+            <a href="#">What We Do</a>
+            <a href="#">Available Services</a>
+            <a href="#">Latest Posts</a>
+            <a href="#">FAQs</a>
+          </div>
         </div>
         <div className={styles["footer-part"]}>
           <h3>SOCIAL MEDIA</h3>
-          <a href="#">Twitter X</a>
-          <a href="#">Instagram</a>
-          <a href="#">Facebook</a>
-          <a href="#">Pinterest</a>
+          <div className={styles["footer-link"]}>
+            <a href="#">Twitter X</a>
+            <a href="#">Instagram</a>
+            <a href="#">Facebook</a>
+            <a href="#">Pinterest</a>
+          </div>
         </div>
       </div>
     </div>
