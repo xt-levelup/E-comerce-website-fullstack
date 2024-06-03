@@ -27,6 +27,14 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  initQuantity: {
+    type: Number,
+    required: true,
+  },
+  inventoryQuantity: {
+    type: Number,
+    required: true,
+  },
   userId: {
     type: String,
     required: true,

@@ -15,6 +15,8 @@ exports.addProduct = (req, res, next) => {
   const longDesc = req.body.longDesc;
   const imageFiles = req.files;
   const authHeader = req.get("Authorization");
+  const initQuantity = req.body.initQuantity;
+  const inventoryQuantity = req.body.inventoryQuantity;
   const userId = req.body.userId;
 
   const errors = validationResult(req);
@@ -26,6 +28,8 @@ exports.addProduct = (req, res, next) => {
   console.log("longDesc:", longDesc);
   console.log("imageFiles:", imageFiles);
   console.log("authHeader:", authHeader);
+  console.log("initQuantity:", initQuantity);
+  console.log("inventoryQuantity:", inventoryQuantity);
   console.log("userId:", userId);
 
   console.log("req.userId:", req.userId);
@@ -52,6 +56,8 @@ exports.addProduct = (req, res, next) => {
     imageUrls: imageFiles.map((image) => {
       return image.path;
     }),
+    initQuantity: initQuantity,
+    inventoryQuantity: inventoryQuantity,
     userId: req.userId,
   });
 
@@ -84,6 +90,8 @@ exports.editProduct = (req, res, next) => {
   const longDesc = req.body.longDesc;
   const imageFiles = req.files;
   const authHeader = req.get("Authorization");
+  const initQuantity = req.body.initQuantity;
+  const inventoryQuantity = req.body.inventoryQuantity;
   const userId = req.body.userId;
   const productId = req.body.productId;
   const errors = validationResult(req);
@@ -95,6 +103,8 @@ exports.editProduct = (req, res, next) => {
   console.log("longDesc:", longDesc);
   console.log("imageFiles:", imageFiles);
   console.log("authHeader:", authHeader);
+  console.log("initQuantity:", initQuantity);
+  console.log("inventoryQuantity:", inventoryQuantity);
   console.log("userId:", userId);
   console.log("productId:", productId);
   console.log("req.userId:", req.userId);
@@ -123,6 +133,8 @@ exports.editProduct = (req, res, next) => {
       product.imageUrls = imageFiles.map((image) => {
         return image.path;
       });
+      product.initQuantity = initQuantity;
+      product.inventoryQuantity = inventoryQuantity;
       product.userId = req.userId;
       return product.save();
     })

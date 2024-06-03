@@ -23,6 +23,8 @@ const ProductPage = () => {
 
   const [searchInput, setSearchInput] = useState("");
   const [currentProductData, setCurrentProductData] = useState(null);
+  const [deleteBox, setDeleteBox] = useState(false);
+  const [deleteProductId, setDeleteProductId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchProductsSliceAction());
@@ -53,6 +55,19 @@ const ProductPage = () => {
   const updateHandle = (productId) => {
     console.log("productId:", productId);
     navigate(`/add-product/${productId}`);
+  };
+
+  const deleteButton = (productId) => {
+    setDeleteBox(true);
+    setDeleteProductId(productId);
+  };
+  const deleteNoButton = () => {
+    setDeleteBox(false);
+  };
+  const deleteYesButton = () => {
+    deleteHandle(deleteProductId);
+    setDeleteProductId(null);
+    setDeleteBox(false);
   };
 
   const deleteHandle = async (productId) => {
@@ -142,6 +157,9 @@ const ProductPage = () => {
   useEffect(() => {
     console.log("errorMessage:", errorMessage);
   }, [errorMessage]);
+  useEffect(() => {
+    console.log("deleteProductId:", deleteProductId);
+  }, [deleteProductId]);
 
   return (
     <div className={styles.contain}>
@@ -179,7 +197,9 @@ const ProductPage = () => {
                 >
                   <p>{product._id}</p>
                   <p style={{ marginLeft: "-1px" }}>{product.name}</p>
-                  <p style={{ marginLeft: "-1px" }}>{product.price}</p>
+                  <p style={{ marginLeft: "-1px" }}>
+                    {product.price.toLocaleString("vi-VN")} VND
+                  </p>
                   <div style={{ marginLeft: "-1px" }}>
                     <img
                       src={`http://localhost:5000/${product.imageUrls[0]}`}
@@ -196,7 +216,8 @@ const ProductPage = () => {
                     </button>
                     <button
                       style={{ backgroundColor: "red", color: "white" }}
-                      onClick={() => deleteHandle(product._id)}
+                      // onClick={() => deleteHandle(product._id)}
+                      onClick={() => deleteButton(product._id)}
                     >
                       Delete
                     </button>
@@ -243,6 +264,27 @@ const ProductPage = () => {
             </div>
           )}
         </div>
+        {deleteBox && (
+          <div className={styles["delete-box"]}>
+            <div className={styles["delete-box-content"]}>
+              <p>Delete this product?</p>
+              <div>
+                <button
+                  style={{ backgroundColor: "red", color: "white" }}
+                  onClick={deleteYesButton}
+                >
+                  Yes
+                </button>
+                <button
+                  style={{ backgroundColor: "blue", color: "white" }}
+                  onClick={deleteNoButton}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

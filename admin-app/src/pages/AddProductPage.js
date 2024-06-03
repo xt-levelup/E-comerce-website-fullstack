@@ -307,6 +307,24 @@ const AddProductPage = () => {
             onChange={imagesHandle}
           />
         </div>
+        <div>
+          <label>Quantity In Store</label>
+          <input
+            type="number"
+            min="1"
+            style={{ width: "210px", textAlign: "center" }}
+            placeholder="Quantity in store"
+          />
+        </div>
+        <div>
+          <label>Inventory Quantity</label>
+          <input
+            type="number"
+            min="1"
+            style={{ width: "210px", textAlign: "center" }}
+            placeholder="Inventory Quantity"
+          />
+        </div>
 
         <button type="button" onClick={addProductHandle}>
           Submit

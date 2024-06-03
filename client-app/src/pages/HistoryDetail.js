@@ -106,7 +106,7 @@ const HistoryDetail = () => {
           </div>
           <div>
             <div className={styles.header}>
-              <div>ID RPODUCT</div>
+              <div>ID PRODUCT</div>
               <div>IMAGE</div>
               <div>NAME</div>
               <div>PRICE</div>

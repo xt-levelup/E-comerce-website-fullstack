@@ -102,7 +102,7 @@ const HistoryPage = () => {
       </div>
       <div className={styles.content}>
         <div className={styles.header}>
-          <div>ID Order</div>
+          <div className={styles["header-max-1999"]}>ID Order</div>
           <div className={styles["max-1999-remove-header"]}>ID User</div>
           <div className={styles["max-1999-remove-header"]}>Name</div>
           <div className={styles["max-1999-remove-header"]}>Phone</div>

@@ -38,6 +38,9 @@
 
 .header h4{
     border:1px solid white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     padding:6px;
     margin:0;
     height:36px;
@@ -98,4 +101,51 @@
 .edit button:hover{
     transition: transform 0.5s;
     transform:scale(1.1);
+}
+.delete-box{
+    position:fixed;
+    width:100%;
+    height:100%;
+    transform:translate(-50%,-50%);
+    top:50%;
+    left:50%;
+    background-color:black;
+    opacity:0.8;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1em;
+    
+}
+.delete-box p{
+    color:black;
+    border:none;
+    font-weight:600;
+
+}
+.delete-box-content{
+    background-color:white;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1em;
+    padding:2em;
+    border-radius:6px;
+    /* opacity:1.1; */
+}
+
+.delete-box-content div{
+    display:flex;
+    /* justify-content:space-between; */
+    gap:3em;
+}
+
+.delete-box-content button{
+    cursor:pointer;
+    height:30px;
+    width:42px;
+    border:none;
+    border-radius:3px;
 }

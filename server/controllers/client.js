@@ -300,7 +300,9 @@ exports.userOrder = (req, res, next) => {
     "vi-VN"
   )} VND</td>          
   <td style="font-size:18px;">${item.quantity}</td>          
-  <td style="font-size:18px;">${item.totalPrice} VND</td>
+  <td style="font-size:18px;">${item.totalPrice.toLocaleString(
+    "vi-VN"
+  )} VND</td>
 </tr>
 `;
     });
