@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const Product = require("../models/product");
 const deleteImageFiles = require("../util/imageRemove");
@@ -7,6 +6,7 @@ const Order = require("../models/order");
 const Message = require("../models/messageSession");
 const io = require("../socket");
 
+// --- Phương thức tạo mới sản phẩm ---------------------------
 exports.addProduct = (req, res, next) => {
   const name = req.body.name;
   const price = req.body.price;
@@ -18,23 +18,7 @@ exports.addProduct = (req, res, next) => {
   const initQuantity = req.body.initQuantity;
   const inventoryQuantity = req.body.inventoryQuantity;
   const userId = req.body.userId;
-
   const errors = validationResult(req);
-
-  console.log("name:", name);
-  console.log("price:", price);
-  console.log("category:", category);
-  console.log("shortDesc:", shortDesc);
-  console.log("longDesc:", longDesc);
-  console.log("imageFiles:", imageFiles);
-  console.log("authHeader:", authHeader);
-  console.log("initQuantity:", initQuantity);
-  console.log("inventoryQuantity:", inventoryQuantity);
-  console.log("userId:", userId);
-
-  console.log("req.userId:", req.userId);
-
-  console.log("errors:", errors);
 
   if (!errors.isEmpty()) {
     res.status(422).json(errors.array()[0]);
@@ -64,7 +48,6 @@ exports.addProduct = (req, res, next) => {
   product
     .save()
     .then((result) => {
-      console.log("result add product:", result);
       res.status(201).json({
         message: "Add product successfully!",
       });
@@ -81,7 +64,9 @@ exports.addProduct = (req, res, next) => {
       });
     });
 };
+// -----------------------------------------------------------
 
+// --- Phương thức chỉnh sửa sản phẩm ------------------------
 exports.editProduct = (req, res, next) => {
   const name = req.body.name;
   const price = req.body.price;
@@ -95,21 +80,6 @@ exports.editProduct = (req, res, next) => {
   const userId = req.body.userId;
   const productId = req.body.productId;
   const errors = validationResult(req);
-
-  console.log("name:", name);
-  console.log("price:", price);
-  console.log("category:", category);
-  console.log("shortDesc:", shortDesc);
-  console.log("longDesc:", longDesc);
-  console.log("imageFiles:", imageFiles);
-  console.log("authHeader:", authHeader);
-  console.log("initQuantity:", initQuantity);
-  console.log("inventoryQuantity:", inventoryQuantity);
-  console.log("userId:", userId);
-  console.log("productId:", productId);
-  console.log("req.userId:", req.userId);
-
-  console.log("errors:", errors);
 
   if (!errors.isEmpty()) {
     res.status(422).json(errors.array()[0]);
@@ -139,7 +109,6 @@ exports.editProduct = (req, res, next) => {
       return product.save();
     })
     .then((result) => {
-      console.log("result update product:", result);
       res.status(201).json({
         message: "Updated successfully!",
       });
@@ -151,17 +120,15 @@ exports.editProduct = (req, res, next) => {
       });
     });
 };
+// --------------------------------------------------------------
 
+// --- Phương thức xóa sản phầm ---------------------------------
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
   const authHeader = req.get("Authorization");
 
-  console.log("productId:", productId);
-  console.log("authHeader:", authHeader);
-
   Product.findByIdAndDelete(productId)
     .then((result) => {
-      console.log("Result delete product:", result);
       res.status(201).json({
         message: "Deleted the product successfully!",
       });
@@ -171,11 +138,12 @@ exports.deleteProduct = (req, res, next) => {
       res.status(500).json({ message: err.message });
     });
 };
+// --------------------------------------------------------------
 
+// --- Phương thức lấy thông tin tất cả users -------------------
 exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => {
-      // res.status(200).json(users);
       return users;
     })
     .then((users) => {
@@ -200,7 +168,9 @@ exports.getUsers = (req, res, next) => {
       console.log("Err getUsers:", err);
     });
 };
+// --------------------------------------------------------------
 
+// Phương thức lấy các session chat -----------------------------
 exports.getChats = (req, res, next) => {
   Message.find()
     .then((messageSessions) => {
@@ -213,18 +183,15 @@ exports.getChats = (req, res, next) => {
       });
     });
 };
+// --------------------------------------------------------------
 
+// --- Phương thức send message từ addmin-app -------------------
+// --- Sử dụng socket.io để theo dõi các đoạn messenger ---------
 exports.adminAddMessage = (req, res, next) => {
   const currentMessage = req.body.currentMessage;
   const userIdChat = req.body.userIdChat;
   const userId = req.body.userId;
   const errors = validationResult(req);
-
-  console.log("currentMessage:", currentMessage);
-  console.log("userIdChat:", userIdChat);
-  console.log("userId:", userId);
-  // console.log("userId:", userId);
-  console.log("errors:", errors);
 
   if (!errors.isEmpty()) {
     res.status(422).json(errors.array()[0]);
@@ -245,7 +212,6 @@ exports.adminAddMessage = (req, res, next) => {
           message: "This user closed this chat!",
         });
       } else {
-        // console.log("sessionMessage:", sessionMessage);
         User.findById(userId)
           .then((user) => {
             sessionMessage.messages.push({
@@ -257,10 +223,8 @@ exports.adminAddMessage = (req, res, next) => {
             return sessionMessage.save();
           })
           .then((sessionMessage) => {
-            // console.log("sessionMessage res:", sessionMessage);
             io.getIo().emit("adminPosts", {
               action: "adminAddMessage",
-              // sessionMessage: sessionMessage,
             });
             res.status(201).json(sessionMessage);
           })
@@ -277,3 +241,4 @@ exports.adminAddMessage = (req, res, next) => {
       });
     });
 };
+// --------------------------------------------------------------

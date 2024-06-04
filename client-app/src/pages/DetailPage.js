@@ -106,6 +106,7 @@ const DetailPage = () => {
 
   const clickImageRealative = (currentProduct) => {
     setProductView(currentProduct);
+    setQuantityInStock(currentProduct.inventoryQuantity);
     const targetElement = document.getElementById("main-title");
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: "smooth" });

@@ -1,9 +1,10 @@
 const User = require("../models/user");
-const Session = require("../models/session");
+// const Session = require("../models/session");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// --- CHỨC NĂNG ĐĂNG KÝ -------------------------------------
 exports.postSignup = (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -11,20 +12,9 @@ exports.postSignup = (req, res, next) => {
   const confirmPassword = req.body.confirmPassword;
   const phone = req.body.phone;
   const userType = req.body.userType;
-
   const errors = validationResult(req);
 
-  console.log("name:", name);
-  console.log("email:", email);
-  console.log("password:", password);
-  console.log("confirmPassword:", confirmPassword);
-  console.log("phone:", phone);
-  console.log("userType:", userType);
-  console.log("errors:", errors);
-  //   console.log("errors.array()[0].msg:", errors.array()[0].msg);
-
   if (!errors.isEmpty()) {
-    console.log("error");
     res.status(422).json(errors.array()[0]);
     return;
   }
@@ -43,7 +33,6 @@ exports.postSignup = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
-      console.log("result signup:", result);
       res.status(201).json(result);
     })
     .catch((err) => {
@@ -54,14 +43,16 @@ exports.postSignup = (req, res, next) => {
     });
 };
 
+// --------------------------------------------------------------
+
+// --- CHỨC NĂNG LOGIN ------------------------------------------
+// --- SỬ DỤNG jsonwebtoken Ở authCheck.js ----------------------
+// --- TRONG middleware ĐỂ TẠO MỘT COOKIE ĐẾN CLIENT ------------
+
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const errors = validationResult(req);
-
-  console.log("email login:", email);
-  console.log("password login:", password);
-  console.log("errors login:", errors);
 
   if (!errors.isEmpty()) {
     res.status(422).json(errors.array()[0]);
@@ -91,3 +82,5 @@ exports.postLogin = (req, res, next) => {
       });
     });
 };
+
+// --------------------------------------------------------------

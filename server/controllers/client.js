@@ -6,7 +6,6 @@ const Order = require("../models/order");
 const nodemailer = require("nodemailer");
 const senGridTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
-
 const transporter = nodemailer.createTransport(
   senGridTransport({
     auth: {
@@ -15,10 +14,9 @@ const transporter = nodemailer.createTransport(
   })
 );
 
+// --- Phương thức gửi thông tin chat đến khách hàng -----------
 exports.getChatDataClient = (req, res, next) => {
   const userId = req.body.userId;
-
-  console.log("userId getChatDataClient:", userId);
 
   Message.findOne({ userId: userId })
     .then((messageSession) => {
@@ -32,19 +30,17 @@ exports.getChatDataClient = (req, res, next) => {
       });
     });
 };
+// --------------------------------------------------------------
 
+// --- Phương thức để khách hàng gửi đoạn chat lên server -------
+// --- Sử dụng socket.io để theo dõi trả lời từ admin-app -------
 exports.addMessage = (req, res, next) => {
   const currentMessage = req.body.currentMessage;
   const userId = req.body.userId;
 
-  console.log("currentMessage:", currentMessage);
-  console.log("userId addMessage:", userId);
-
-  // Message.findOne({ userId: req.userId })
   Message.findOne({ userId: userId })
     .then((sessionMessage) => {
       if (!sessionMessage) {
-        console.log("Have no sessionMessage!");
         User.findById(userId)
           .then((user) => {
             const newSessionMessage = new Message({
@@ -61,14 +57,12 @@ exports.addMessage = (req, res, next) => {
             return newSessionMessage.save();
           })
           .then((sessionMessage) => {
-            // console.log("sessionMessage res:", sessionMessage);
             io.getIo().emit("posts", {
               action: "addMessage",
               post: sessionMessage,
             });
             res.status(201).json(sessionMessage);
           })
-
           .catch((err) => {
             console.log("err User.findById in Add message:", err);
             res.status(500).json({
@@ -76,7 +70,6 @@ exports.addMessage = (req, res, next) => {
             });
           });
       } else {
-        // console.log("sessionMessage:", sessionMessage);
         User.findById(userId)
           .then((user) => {
             sessionMessage.messages.push({
@@ -92,12 +85,8 @@ exports.addMessage = (req, res, next) => {
               action: "addMessage",
               post: sessionMessage,
             });
-
-            // io.getIo().emit("posts", { action: "delete", postDelete: result });
-            // console.log("sessionMessage res:", sessionMessage);
             res.status(201).json(sessionMessage);
           })
-
           .catch((err) => {
             connsole.log("err User.findById() in AddMessage else:", err);
             res.status(500).json({
@@ -113,11 +102,12 @@ exports.addMessage = (req, res, next) => {
       });
     });
 };
+// ---------------------------------------------------------------
 
+// --- Phương thức kết thúc đoạn chat ----------------------------
+// --- Sử dụng socket.io để theo dõi đoạn chat -------------------
 exports.deleteMessageSession = (req, res, next) => {
   const clientIdChat = req.body.clientMessageId;
-
-  console.log("clientIdChat:", clientIdChat);
 
   if (!clientIdChat) {
     res.status(403).json({
@@ -143,14 +133,12 @@ exports.deleteMessageSession = (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
+// --- Phương thức thêm sản phẩm và giở hàng dành cho khách hàng --
 exports.clientAddToCart = (req, res, next) => {
   const productIdAddCart = req.body.productIdAddCart;
   const numberToCart = req.body.numberToCart;
-
-  console.log("productIdAddCart:", productIdAddCart);
-  console.log("numberToCart:", numberToCart);
-  console.log("req.userId:", req.userId);
 
   Product.findById(productIdAddCart)
     .then((product) => {
@@ -171,7 +159,6 @@ exports.clientAddToCart = (req, res, next) => {
           return user.addToCart(product, numberToCart);
         })
         .then((result) => {
-          console.log("result user.addToCart:", result);
           res.status(201).json({
             message: "Add to cart successfully!",
           });
@@ -190,7 +177,9 @@ exports.clientAddToCart = (req, res, next) => {
       });
     });
 };
+// ---------------------------------------------------------------
 
+// --- Phương thức lấy thông tin giỏ hàng ------------------------
 exports.getCart = (req, res, next) => {
   User.findById(req.userId)
     .then((user) => {
@@ -209,7 +198,9 @@ exports.getCart = (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
+// --- Phương thức loại bỏ sản phẩm chỉ định ở giở hàng -----------
 exports.removeCartItem = (req, res, next) => {
   const productId = req.body.productId;
 
@@ -239,7 +230,9 @@ exports.removeCartItem = (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
+// --- Phương thức cập nhật giỏ hàng ------------------------------
 exports.updateCart = (req, res, next) => {
   const newItems = req.body.newItems;
 
@@ -266,20 +259,20 @@ exports.updateCart = (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
+// --- Phương thức đặt hàng ---------------------------------------
+// --- Sử dụng SendGrid và Nodemailer để gửi email cho khách hàng -
 exports.userOrder = async (req, res, next) => {
   const order = req.body.order;
   const localDate = new Date();
-
   const day = localDate.getDate().toString().padStart(2, "0");
   const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
   const year = localDate.getFullYear();
   const hours = localDate.getHours().toString().padStart(2, "0");
   const minutes = localDate.getMinutes().toString().padStart(2, "0");
   const seconds = localDate.getSeconds().toString().padStart(2, "0");
-
   const orderDate = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-
   const errors = validationResult(req);
   const htmlLoop =
     order &&
@@ -329,9 +322,6 @@ exports.userOrder = async (req, res, next) => {
     <h4 style="font-size:18px;">Cảm ơn bạn!</h4>
   `;
 
-  console.log("order:", order);
-  console.log("errors:", errors);
-
   if (!errors.isEmpty()) {
     res.status(422).json(errors.array()[0]);
     return;
@@ -361,32 +351,19 @@ exports.userOrder = async (req, res, next) => {
       Array.isArray(orderProducts) &&
       orderProducts.length > 0
     ) {
-      // console.log("orderProducts:", orderProducts);
-
       for (let i = 0; i < orderProducts.length; i++) {
-        // console.log("orderProducts[i]:", orderProducts[i]);
         const compareProd = order.orderItems.find((currentOrder) => {
           return (
             currentOrder.currentProd._id.toString() ===
             orderProducts[i]._id.toString()
           );
         });
-        // console.log("compareProd:", compareProd);
         if (!compareProd) {
           orderErrors.push(
             `The product ${orderProducts[i].name} cannot found!`
           );
         } else {
           if (orderProducts[i].inventoryQuantity - compareProd.quantity < 0) {
-            console.log(
-              "orderProducts[i].inventoryQuantity:",
-              orderProducts[i].inventoryQuantity
-            );
-            console.log("compareProd.quantity:", compareProd.quantity);
-            console.log(
-              "orderProducts[i].inventoryQuantity - compareProd.quantity:",
-              orderProducts[i].inventoryQuantity - compareProd.quantity
-            );
             orderErrors.push(
               `Quanlity of this product ${orderProducts[i].name} is ${orderProducts[i].inventoryQuantity} in store now!`
             );
@@ -394,7 +371,7 @@ exports.userOrder = async (req, res, next) => {
         }
       }
     }
-    console.log("orderErrors:", orderErrors);
+
     if (orderErrors && Array.isArray(orderErrors) && orderErrors.length > 0) {
       res.status(403).json({
         message: orderErrors[0],
@@ -412,7 +389,6 @@ exports.userOrder = async (req, res, next) => {
   newOrder
     .save()
     .then((result) => {
-      console.log("result newOrder.save():", result);
       User.findById(req.userId)
         .then((user) => {
           if (!user) {
@@ -439,7 +415,6 @@ exports.userOrder = async (req, res, next) => {
                 });
               });
           }
-          console.log("result userOrder user.clearCart():", result);
           res.status(201).json({
             message: "Your order was done!",
           });
@@ -450,18 +425,6 @@ exports.userOrder = async (req, res, next) => {
             html: htmlSender,
           });
         })
-        // .then((result) => {
-        //   console.log("result userOrder user.clearCart():", result);
-        //   res.status(201).json({
-        //     message: "Your order was done!",
-        //   });
-        //   return transporter.sendMail({
-        //     to: result.email,
-        //     from: "xitrumvndn@gmail.com",
-        //     subject: "Yor new order was done!",
-        //     html: htmlSender,
-        //   });
-        // })
         .catch((err) => {
           console.log("err User.findById newOrder.save():", err);
           res.status(500).json({
@@ -476,131 +439,9 @@ exports.userOrder = async (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
-// exports.userOrder = (req, res, next) => {
-//   const order = req.body.order;
-//   const localDate = new Date();
-
-//   const day = localDate.getDate().toString().padStart(2, "0");
-//   const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
-//   const year = localDate.getFullYear();
-//   const hours = localDate.getHours().toString().padStart(2, "0");
-//   const minutes = localDate.getMinutes().toString().padStart(2, "0");
-//   const seconds = localDate.getSeconds().toString().padStart(2, "0");
-
-//   const orderDate = `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-
-//   const errors = validationResult(req);
-//   const htmlLoop =
-//     order &&
-//     order.orderItems.length > 0 &&
-//     order.orderItems.map((item) => {
-//       return `
-// <tr>
-//   <td style="font-size:18px;">${item.currentProd.name}</td>
-//   <td style="font-size:18px;"><img src="http://localhost:5000/${
-//     item.currentProd.imageUrls[0]
-//   }" style="object-fit:fill; width:100%; height:100%;" alt="${
-//         item.currentProd.name
-//       }"></td>
-//   <!-- <td style="font-size:18px;"><img src="http://localhost:5000/images/1716909526355-173090586-watch_1_4.jpeg" style="object-fit:fill; width:100%; height:100%;" alt="${
-//     item.currentProd.name
-//   }"></td> -->
-//   <td style="font-size:18px;">${item.currentProd.price.toLocaleString(
-//     "vi-VN"
-//   )} VND</td>
-//   <td style="font-size:18px;">${item.quantity}</td>
-//   <td style="font-size:18px;">${item.totalPrice.toLocaleString(
-//     "vi-VN"
-//   )} VND</td>
-// </tr>
-// `;
-//     });
-
-//   const htmlSender = `
-//     <h1>Hi: ${order.name}<h1>
-//       <p style="font-size:12px;" >Địa chỉ: ${order.address}</p>
-//       <p style="font-size:12px;" >SĐT: ${order.phone}</p>
-//     <table border="1" >
-//       <tr>
-//           <th style="font-size:12px;">Tên sản phẩm</th>
-//           <th style="font-size:12px;">Hình ảnh</th>
-//           <th style="font-size:12px;">Đơn giá</th>
-//           <th style="font-size:12px;">Số lượng</th>
-//           <th style="font-size:12px;">Thành tiền</th>
-//       </tr>
-//       ${htmlLoop.join("")}
-//     </table>
-//     <h2 style="font-size:21px;">Tổng thanh toán:</h2>
-//     <p style="font-size:21px;">${order.orderPrice.toLocaleString(
-//       "vi-VN"
-//     )} VND</p>
-//     <p style="font-size:18px;">Ngày đặt hàng: ${orderDate}</p>
-//     <h4 style="font-size:18px;">Cảm ơn bạn!</h4>
-//   `;
-
-//   console.log("order:", order);
-//   console.log("errors:", errors);
-
-//   if (!errors.isEmpty()) {
-//     res.status(422).json(errors.array()[0]);
-//     return;
-//   }
-
-//   if (!order || !order.orderItems || !order.orderItems.length) {
-//     res.status(403).json({
-//       message: "No order to update!",
-//     });
-//     return;
-//   }
-
-//   const newOrder = new Order({
-//     order: order,
-//     userId: req.userId,
-//     orderDate: new Date(),
-//   });
-
-//   newOrder
-//     .save()
-//     .then((result) => {
-//       console.log("result newOrder.save():", result);
-//       User.findById(req.userId)
-//         .then((user) => {
-//           if (!user) {
-//             res.status(403).json({
-//               message: "Cannot found your account!",
-//             });
-//             return;
-//           }
-//           return user.clearCart();
-//         })
-//         .then((result) => {
-//           console.log("result userOrder user.clearCart():", result);
-//           res.status(201).json({
-//             message: "Your order was done!",
-//           });
-//           return transporter.sendMail({
-//             to: result.email,
-//             from: "xitrumvndn@gmail.com",
-//             subject: "Yor new order was done!",
-//             html: htmlSender,
-//           });
-//         })
-//         .catch((err) => {
-//           console.log("err User.findById newOrder.save():", err);
-//           res.status(500).json({
-//             message: "Cannot order now! Please try again later!",
-//           });
-//         });
-//     })
-//     .catch((err) => {
-//       console.log("err userOrder newOrder.save():", err);
-//       res.status(500).json({
-//         message: "Cannot order now! Please try again later!",
-//       });
-//     });
-// };
-
+// --- Phương thức lấy thông tin các lần order --------------------
 exports.getOrder = (req, res, next) => {
   User.findById(req.userId)
     .then((user) => {
@@ -628,7 +469,9 @@ exports.getOrder = (req, res, next) => {
       });
     });
 };
+// ----------------------------------------------------------------
 
+// --- Phương thức hiển thị thông tin chi tiết một order ----------
 exports.orderDetail = (req, res, next) => {
   const orderId = req.body.orderId;
 
@@ -653,3 +496,4 @@ exports.orderDetail = (req, res, next) => {
       console.log("err orderDetail Order.findById:", err);
     });
 };
+// ---------------------------------------------------------------

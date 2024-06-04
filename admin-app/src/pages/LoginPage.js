@@ -2,9 +2,10 @@ import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import styles from "./LoginPage.module.css";
 import { authSliceActions } from "../store/authSlice";
+
+// --- TRANG ĐĂNG NHẬP DÀNH CHO KHÁCH HÀNG -------------------
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -16,11 +17,9 @@ const LoginPage = () => {
   const clearLocalStorage = () => {
     localStorage.removeItem("userData");
   };
-
   const email = useSelector((state) => {
     return state.authSlice.email;
   });
-
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
@@ -30,13 +29,13 @@ const LoginPage = () => {
   const localStorageData = useSelector((state) => {
     return state.authSlice.localStorageData;
   });
-
   const [password, setPassword] = useState("");
 
   useEffect(() => {
     dispatch(authSliceActions.errorMessageUpdate(null));
   }, []);
 
+  // --- Gửi thông tin về server để xác nhận đăng nhập ---------
   const loginHandle = async () => {
     const urlServer = "http://localhost:5000/login";
     const response = await fetch(urlServer, {
@@ -76,6 +75,7 @@ const LoginPage = () => {
       navigate("/");
     }
   };
+  // ----------------------------------------------------------
 
   const emailHandle = (event) => {
     dispatch(authSliceActions.emailUpdate(event.target.value));
@@ -83,19 +83,6 @@ const LoginPage = () => {
   const passwordHandle = (event) => {
     setPassword(event.target.value);
   };
-
-  useEffect(() => {
-    console.log("email:", email);
-  }, [email]);
-  useEffect(() => {
-    console.log("password:", password);
-  }, [password]);
-  useEffect(() => {
-    console.log("auth:", auth);
-  }, [auth]);
-  useEffect(() => {
-    console.log("localStorageData:", localStorageData);
-  }, [localStorageData]);
 
   return (
     <div className={styles.contain}>

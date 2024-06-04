@@ -2,6 +2,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const deleteImageFiles = require("../util/imageRemove");
 
+// --- PHƯƠNG THỨC KIỂM TRA USER KHÁCH HÀNG ------------------
+// --- SỬ DỤNG  jsonwebtoken ĐỂ TRẢ VỀ MỘT COOKIE ------------
+// --- CÓ GIỚI HẠN THỜI GIAN 1H ------------------------------
+
 exports.checkToken = (req, res, next) => {
   const getAuth = req.get("Authorization");
 
@@ -11,8 +15,11 @@ exports.checkToken = (req, res, next) => {
     });
     return;
   }
+
   const token = getAuth.split(" ")[1];
+
   let decodedToken;
+
   try {
     decodedToken = jwt.verify(token, "supersecretxt");
   } catch (err) {
@@ -33,6 +40,12 @@ exports.checkToken = (req, res, next) => {
   next();
 };
 
+// -----------------------------------------------------------
+
+// --- PHƯƠNG THỨC KIỂM TRA USER ADMIN -----------------------
+// --- SỬ DỤNG  jsonwebtoken ĐỂ TRẢ VỀ MỘT COOKIE ------------
+// --- CÓ GIỚI HẠN THỜI GIAN 1H ------------------------------
+
 exports.checkAdmin = (req, res, next) => {
   const getAuth = req.get("Authorization");
 
@@ -42,8 +55,11 @@ exports.checkAdmin = (req, res, next) => {
     });
     return;
   }
+
   const token = getAuth.split(" ")[1];
+
   let decodedToken;
+
   try {
     decodedToken = jwt.verify(token, "supersecretxt");
   } catch (err) {
@@ -54,6 +70,7 @@ exports.checkAdmin = (req, res, next) => {
         return image.path;
       })
     );
+
     res.status(500).json({ message: err.message });
     return;
   }
@@ -64,7 +81,9 @@ exports.checkAdmin = (req, res, next) => {
     });
     return;
   }
+
   req.userId = decodedToken.userId;
+
   User.findById(req.userId)
     .then((user) => {
       if (user.userType !== "admin") {
@@ -76,12 +95,18 @@ exports.checkAdmin = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      console.log("err user find id:", err);
+      console.log("err user find id checkAdmin:", err);
       res.status(500).json({
         message: err.message,
       });
     });
 };
+
+// -----------------------------------------------------------
+
+// --- PHƯƠNG THỨC KIỂM TRA USER TƯ VẤN VIÊN -----------------
+// --- SỬ DỤNG  jsonwebtoken ĐỂ TRẢ VỀ MỘT COOKIE ------------
+// --- CÓ GIỚI HẠN THỜI GIAN 1H ------------------------------
 
 exports.checkCounselor = (req, res, next) => {
   const getAuth = req.get("Authorization");
@@ -92,8 +117,11 @@ exports.checkCounselor = (req, res, next) => {
     });
     return;
   }
+
   const token = getAuth.split(" ")[1];
+
   let decodedToken;
+
   try {
     decodedToken = jwt.verify(token, "supersecretxt");
   } catch (err) {
@@ -115,7 +143,9 @@ exports.checkCounselor = (req, res, next) => {
     });
     return;
   }
+
   req.userId = decodedToken.userId;
+
   User.findById(req.userId)
     .then((user) => {
       if (user.userType === "normal") {
@@ -133,3 +163,5 @@ exports.checkCounselor = (req, res, next) => {
       });
     });
 };
+
+// -----------------------------------------------------------

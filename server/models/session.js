@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------
+//--- Có thể sử dụng session này để thay thế jsonwebtoken-----------
+// -----------------------------------------------------------------
+
 // const mongoose = require("mongoose");
 
 // const Schema = mongoose.Schema;
@@ -14,3 +18,5 @@
 // sessionSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
 // module.exports = mongoose.model("Sessions", sessionSchema);
+
+//----------------------------------------------------------------

@@ -9,7 +9,6 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 const helmet = require("helmet");
-
 // const Session = require("./models/session");
 
 require("dotenv").config();
@@ -77,6 +76,8 @@ app.use(adminRoutes);
 app.use(productRoutes);
 app.use(clientRoutes);
 
+// --- Sử dụng Mongoose để kết nối và lưu dữ liệu vào MongoDB ---
+// --- Sử dụng socket.io để theo dõi và cập nhật chat -----------
 mongoose
   .connect(mongodbUrl)
   .then((result) => {
@@ -92,3 +93,4 @@ mongoose
   .catch((err) => {
     console.log("mongoose connect err:", err);
   });
+// --------------------------------------------------------------

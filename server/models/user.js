@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------
+// --- MODEL CHO USER ----------------------------------------------
+// -----------------------------------------------------------------
+
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -34,6 +38,7 @@ const userSchema = new Schema({
   },
 });
 
+// --- Phương thức để user thêm sản phẩm vào giỏ hàng -----------
 userSchema.methods.addToCart = function (product, numberToCart) {
   const cartProductIndex = this.cart.items.findIndex((i) => {
     return i.productId.toString() === product._id.toString();
@@ -58,10 +63,13 @@ userSchema.methods.addToCart = function (product, numberToCart) {
 
   return this.save();
 };
+// --------------------------------------------------------------
 
+// --- Phương thức làm rỗng giỏ hàng sau khi order thành công ---
 userSchema.methods.clearCart = function () {
   this.cart = { items: [] };
   return this.save();
 };
+// --------------------------------------------------------------
 
 module.exports = mongoose.model("Users", userSchema);

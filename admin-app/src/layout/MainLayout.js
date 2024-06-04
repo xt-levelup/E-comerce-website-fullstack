@@ -1,9 +1,10 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-
 import styles from "./MainLayout.module.css";
 import { authSliceActions } from "../store/authSlice";
+
+// --- LAYOUT TỔNG CỦA TRANG DÀNH CHO KHÁCH HÀNG ---------------
 
 const MainLayout = () => {
   const dispatch = useDispatch();
@@ -15,18 +16,14 @@ const MainLayout = () => {
     return state.authSlice.localStorageData;
   });
 
+  // --- Chức năng logout ----------------------------------
   const logoutHandle = () => {
     localStorage.removeItem("userData");
     dispatch(authSliceActions.localStorageDataUpdate(null));
     dispatch(authSliceActions.authUpdate(false));
   };
+  // -------------------------------------------------------
 
-  useEffect(() => {
-    console.log("auth:", auth);
-  }, [auth]);
-  useEffect(() => {
-    console.log("localStorageData:", localStorageData);
-  }, [localStorageData]);
   return (
     <div className={styles.contain}>
       <div className={styles.nav}>

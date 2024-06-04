@@ -2,14 +2,14 @@ import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
 import styles from "./SignupPage.module.css";
 import { authSliceActions } from "../store/authSlice";
+
+// --- TRANG ĐĂNG KÝ DÀNH CHO KHÁCH HÀNG --------------------
 
 const SignupPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const email = useSelector((state) => {
     return state.authSlice.email;
   });
@@ -22,7 +22,6 @@ const SignupPage = () => {
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
-
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -46,6 +45,7 @@ const SignupPage = () => {
     setConfirmPassword(event.target.value);
   };
 
+  // --- Gửi thông tin về server để đăng ký ------------------
   const signupHandle = async () => {
     const urlServer = "http://localhost:5000/signup";
     const response = await fetch(urlServer, {
@@ -82,25 +82,7 @@ const SignupPage = () => {
       navigate("/login");
     }
   };
-
-  useEffect(() => {
-    console.log("email:", email);
-  }, [email]);
-  useEffect(() => {
-    console.log("name:", name);
-  }, [name]);
-  useEffect(() => {
-    console.log("password:", password);
-  }, [password]);
-  useEffect(() => {
-    console.log("phone:", phone);
-  }, [phone]);
-  useEffect(() => {
-    console.log("confirmPassword:", confirmPassword);
-  }, [confirmPassword]);
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
+  // ------------------------------------------------------------
 
   return (
     <div className={styles.contain}>

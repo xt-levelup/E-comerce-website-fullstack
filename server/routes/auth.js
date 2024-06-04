@@ -2,10 +2,14 @@ const express = require("express");
 const route = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-
 const { check, body } = require("express-validator");
-
 const authControllers = require("../controllers/auth");
+
+// -----------------------------------------------------------------
+// --- Router kết nối đến server để đăng ký và đăng nhập -----------
+// --- Sử dụng express-validator và middleware ---------------------
+// --- Để kiểm tra tính hợp lệ của các thông tin -------------------
+// -----------------------------------------------------------------
 
 route.post(
   "/signup",
@@ -53,7 +57,6 @@ route.post(
           return true;
         });
       }),
-
     body("password").custom(async (value, { req }) => {
       const userDoc = await User.findOne({ email: req.body.email });
       const doMatch = await bcrypt.compare(value, userDoc.password);

@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 
+// --- Phương thức trả về thông tin các sản phẩm đang bán --------
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
@@ -12,3 +13,4 @@ exports.getProducts = (req, res, next) => {
       });
     });
 };
+// ---------------------------------------------------------------

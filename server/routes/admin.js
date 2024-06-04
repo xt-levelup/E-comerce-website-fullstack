@@ -2,9 +2,13 @@ const express = require("express");
 const router = express.Router();
 const { check, body } = require("express-validator");
 const authCheck = require("../middleware/authCheck");
-
 const adminControllers = require("../controllers/admin");
 
+// -----------------------------------------------------------------
+// --- Các Router kết nối admin-app và server ----------------------
+// --- Sử dụng express-validator và middleware ---------------------
+// --- Để kiểm tra tính hợp lệ của các thông tin -------------------
+// -----------------------------------------------------------------
 router.post(
   "/addProduct",
   authCheck.checkAdmin,
@@ -46,9 +50,9 @@ router.post(
       })
       .isNumeric(),
   ],
-
   adminControllers.addProduct
 );
+
 router.post(
   "/editProduct",
   authCheck.checkAdmin,
@@ -79,33 +83,24 @@ router.post(
   ],
   adminControllers.editProduct
 );
+
 router.post(
   "/deleteProduct",
   authCheck.checkAdmin,
   adminControllers.deleteProduct
 );
+
 router.post("/getUsers", authCheck.checkCounselor, adminControllers.getUsers);
 
 router.post("/getChats", adminControllers.getChats);
-// router.post("/getChats", authCheck.checkCounselor, adminControllers.getChats);
 
 router.post(
   "/adminAddMessage",
-  // authCheck.checkCounselor,
   [
     body("currentMessage", "Chat not be empty!").isLength({ min: 1 }),
     body("userIdChat", "Who are you want to send message?"),
   ],
   adminControllers.adminAddMessage
 );
-// router.post(
-//   "/adminAddMessage",
-//   authCheck.checkCounselor,
-//   [
-//     body("currentMessage", "Chat not be empty!").isLength({ min: 1 }),
-//     body("userIdChat", "Who are you want to send message?"),
-//   ],
-//   adminControllers.adminAddMessage
-// );
 
 module.exports = router;

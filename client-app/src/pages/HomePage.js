@@ -138,7 +138,7 @@ const HomePage = () => {
     const localData = JSON.parse(localStorage.getItem("user"));
     const urlServer = "http://localhost:5000/getChatDataClient";
     const token = localData && localData.token;
-    const currentUserId = localData.userId;
+    const currentUserId = localData && localData.userId;
     const response = await fetch(urlServer, {
       method: "POST",
       headers: {
