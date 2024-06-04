@@ -80,15 +80,21 @@ const ChatPage = () => {
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setChatData(data);
-      const messages =
+      const currentMessages =
         userIdClick &&
         data &&
         data.find((chat) => {
           return chat.userId === userIdClick;
-        }).messages;
-      setChatContent(messages);
-      return data;
+        });
+      if (currentMessages) {
+        setChatContent(currentMessages);
+      } else {
+        setChatContent([]);
+      }
     }
+    // const messages =
+
+    return data;
   };
 
   useEffect(() => {

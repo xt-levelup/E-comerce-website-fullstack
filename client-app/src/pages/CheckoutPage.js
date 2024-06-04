@@ -34,16 +34,23 @@ const CheckoutPage = () => {
     dispatch(
       authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
     );
-    try {
-      dispatch(fetchProductsSliceActions());
-      getCart();
-    } catch (err) {
-      dispatch(
-        authSliceActions.errorMessageUpdate(
-          "Cannot get server data! Please try again later!"
-        )
-      );
-    }
+    const getCartTimer = setTimeout(() => {
+      try {
+        dispatch(fetchProductsSliceActions());
+        getCart();
+        console.log("Run time out!");
+      } catch (err) {
+        dispatch(
+          authSliceActions.errorMessageUpdate(
+            "Cannot get server data! Please try again later!"
+          )
+        );
+      }
+    }, 1000);
+    return () => {
+      console.log("clear time out!");
+      clearTimeout(getCartTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -87,6 +94,7 @@ const CheckoutPage = () => {
       }
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
+      console.log("data getCart:", data);
       setCartData(data);
     }
   };

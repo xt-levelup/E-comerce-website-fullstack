@@ -61,10 +61,10 @@ const HomePage = () => {
 
   const boxShowToFalse = (event) => {
     if (event.key === "Escape") {
-      setBoxShow(false);
       deleteMessageHandle();
-      setCurrentMessage("");
       setMessageData(null);
+      setCurrentMessage("");
+      setBoxShow(false);
     }
   };
 
@@ -135,8 +135,10 @@ const HomePage = () => {
   }, [currentMessage]);
 
   const getChatDataClient = async () => {
+    const localData = JSON.parse(localStorage.getItem("user"));
     const urlServer = "http://localhost:5000/getChatDataClient";
-    const token = author && author.token;
+    const token = localData && localData.token;
+    const currentUserId = localData.userId;
     const response = await fetch(urlServer, {
       method: "POST",
       headers: {
@@ -144,7 +146,7 @@ const HomePage = () => {
         Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
-        userId: userId,
+        userId: currentUserId,
       }),
     });
     const data = await response.json();

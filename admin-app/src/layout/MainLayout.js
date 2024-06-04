@@ -31,7 +31,7 @@ const MainLayout = () => {
     <div className={styles.contain}>
       <div className={styles.nav}>
         <nav>
-          <div>
+          <div className={styles["nav-left"]}>
             <NavLink
               to="/"
               className={({ isActive }) => {
@@ -67,7 +67,7 @@ const MainLayout = () => {
             </NavLink>
           </div>
           {!auth && (
-            <div>
+            <div className={styles["nav-right"]}>
               <NavLink
                 to="/login"
                 className={({ isActive }) => {
@@ -87,7 +87,7 @@ const MainLayout = () => {
             </div>
           )}
           {auth && (
-            <div>
+            <div className={styles["nav-right"]}>
               <p style={{ color: "blue", fontWeight: "600", border: "none" }}>
                 {localStorageData && localStorageData.email}
               </p>

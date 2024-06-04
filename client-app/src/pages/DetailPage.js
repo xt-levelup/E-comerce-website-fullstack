@@ -14,6 +14,7 @@ const DetailPage = () => {
   const [productView, setProductView] = useState(null);
   const [detailDesc, setDetailDesc] = useState("");
   const [relativeProducts, setRelativeProduct] = useState(null);
+  const [quantityInStock, setQuantityInStock] = useState(null);
 
   const productData = useSelector((state) => {
     return state.fetchProductsSlice.productData;
@@ -30,8 +31,11 @@ const DetailPage = () => {
       const currentProduct = productData.find((product) => {
         return product._id === productId;
       });
-      console.log("currentProduct:", currentProduct);
-      setProductView(currentProduct);
+      // console.log("currentProduct:", currentProduct);
+      setProductView(currentProduct ? currentProduct : null);
+      setQuantityInStock(
+        currentProduct ? currentProduct.inventoryQuantity : null
+      );
     }
   }, [productData]);
 
@@ -71,21 +75,34 @@ const DetailPage = () => {
   };
 
   const prevButtonHandle = () => {
-    if (parseInt(cartNumber) < 0) {
-      setCartNumber("1");
-    } else if (parseInt(cartNumber) > 1) {
+    if (parseInt(quantityInStock) === 0) {
+      setCartNumber(0);
+      dispatch(
+        authSliceActions.errorMessageUpdate("This product is out of stock!")
+      );
+    } else if (parseInt(cartNumber) < 1) {
+      setCartNumber(0);
+    } else if (parseInt(cartNumber) > parseInt(quantityInStock)) {
+      setCartNumber(quantityInStock);
+    } else if (parseInt(cartNumber) < parseInt(quantityInStock) + 1) {
       setCartNumber(parseInt(cartNumber) - 1);
+    } else if (parseInt(cartNumber) === 0) {
+      setCartNumber(0);
     }
   };
   const nextButtonHandle = () => {
     if (parseInt(cartNumber) < 0) {
       setCartNumber("1");
-    } else {
+    } else if (parseInt(cartNumber) < parseInt(quantityInStock)) {
       setCartNumber(parseInt(cartNumber) + 1);
+    } else if (parseInt(cartNumber) > parseInt(quantityInStock)) {
+      setCartNumber(quantityInStock);
     }
   };
 
-  window.scrollTo({ top: 100, behavior: "smooth" });
+  useEffect(() => {
+    window.scrollTo({ top: 100, behavior: "smooth" });
+  }, []);
 
   const clickImageRealative = (currentProduct) => {
     setProductView(currentProduct);
@@ -95,7 +112,7 @@ const DetailPage = () => {
     }
   };
 
-  const addToCartHandle = async () => {
+  const addToCarTServer = async () => {
     console.log("productView._id:", productView._id);
     console.log("parseInt(cartNumber):", parseInt(cartNumber));
     const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -127,6 +144,21 @@ const DetailPage = () => {
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       navigate("/cart");
+    }
+  };
+
+  const addToCartHandle = () => {
+    if (parseInt(cartNumber) > 0) {
+      try {
+        addToCarTServer();
+      } catch (err) {
+        dispatch(
+          authSliceActions.errorMessageUpdate(
+            "Cannot add cart now! Please try again later!"
+          )
+        );
+      }
+      addToCarTServer();
     }
   };
 
@@ -216,6 +248,11 @@ const DetailPage = () => {
                     </svg>
                   </div>
                   <button onClick={addToCartHandle}>Add To Cart</button>
+                </div>
+                <div>
+                  <p style={{ color: "green" }}>
+                    Quantity in stock: {quantityInStock}
+                  </p>
                 </div>
                 {detailPageErrorMessage && (
                   <div>

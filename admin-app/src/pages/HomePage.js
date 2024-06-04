@@ -237,14 +237,49 @@ const HomePage = () => {
           <h4>History</h4>
           <div className={styles["history-show"]}>
             <div className={styles.row}>
-              <h5>ID User</h5>
-              <h5 style={{ borderLeft: "none" }}>Name</h5>
-              <h5 style={{ borderLeft: "none" }}>Phone</h5>
-              <h5 style={{ borderLeft: "none" }}>Address</h5>
-              <h5 style={{ borderLeft: "none" }}>Total</h5>
-              <h5 style={{ borderLeft: "none" }}>Delivery</h5>
-              <h5 style={{ borderLeft: "none" }}>Status</h5>
-              <h5 style={{ borderLeft: "none" }}>Detail</h5>
+              <h5 className={styles["row-h5-p-ok"]}>ID User</h5>
+              <h5
+                className={styles["row-1499-remove"]}
+                style={{ borderLeft: "none" }}
+              >
+                Name
+              </h5>
+              <h5
+                className={styles["row-1499-remove"]}
+                style={{ borderLeft: "none" }}
+              >
+                Phone
+              </h5>
+              <h5
+                className={styles["row-1499-remove"]}
+                style={{ borderLeft: "none" }}
+              >
+                Address
+              </h5>
+              <h5
+                className={styles["row-h5-p-ok"]}
+                style={{ borderLeft: "none" }}
+              >
+                Total
+              </h5>
+              <h5
+                className={styles["row-h5-p-ok"]}
+                style={{ borderLeft: "none" }}
+              >
+                Delivery
+              </h5>
+              <h5
+                className={styles["row-h5-p-ok"]}
+                style={{ borderLeft: "none" }}
+              >
+                Status
+              </h5>
+              <h5
+                className={styles["row-h5-p-ok"]}
+                style={{ borderLeft: "none" }}
+              >
+                Detail
+              </h5>
             </div>
             {newestOrders &&
               Array.isArray(newestOrders) &&
@@ -252,16 +287,54 @@ const HomePage = () => {
               newestOrders.map((order) => {
                 return (
                   <div key={order._id} className={styles["list-orders"]}>
-                    <p>{order.userId}</p>
-                    <p style={{ borderLeft: "none" }}>{order.order.name}</p>
-                    <p style={{ borderLeft: "none" }}>{order.order.phone}</p>
-                    <p style={{ borderLeft: "none" }}>{order.order.address}</p>
-                    <p style={{ borderLeft: "none" }}>
-                      {order.order.orderPrice}
+                    <p className={styles["list-orders-p-ok"]}>
+                      <span>User ID: </span>
+                      {order.userId}
                     </p>
-                    <p style={{ borderLeft: "none" }}>Not shipping yet</p>
-                    <p style={{ borderLeft: "none" }}>Not pay yet</p>
-                    <p style={{ borderLeft: "none" }}>
+                    <p
+                      className={styles["list-orders-1499-remove"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>User Name: </span>
+                      {order.order.name}
+                    </p>
+                    <p
+                      className={styles["list-orders-1499-remove"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>User Phone: </span>
+                      {order.order.phone}
+                    </p>
+                    <p
+                      className={styles["list-orders-1499-remove"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>User Address: </span>
+                      {order.order.address}
+                    </p>
+                    <p
+                      className={styles["list-orders-p-ok"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>Order Price: </span>
+                      {order.order.orderPrice.toLocaleString("vi-VN")} VND
+                    </p>
+                    <p
+                      className={styles["list-orders-p-ok"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>Shipping: </span>Not shipping yet
+                    </p>
+                    <p
+                      className={styles["list-orders-p-ok"]}
+                      style={{ borderLeft: "none" }}
+                    >
+                      <span>Payment: </span>Not pay yet
+                    </p>
+                    <p
+                      className={styles["list-orders-p-ok"]}
+                      style={{ borderLeft: "none" }}
+                    >
                       <button>View</button>
                     </p>
                   </div>
