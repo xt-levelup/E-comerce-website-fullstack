@@ -195,17 +195,28 @@ const ProductPage = () => {
                   style={{ backgroundColor: backgroundColorProduct(index) }}
                   key={product._id}
                 >
-                  <p>{product._id}</p>
-                  <p style={{ marginLeft: "-1px" }}>{product.name}</p>
+                  <p>
+                    <span>Product ID:</span>
+                    {product._id}
+                  </p>
                   <p style={{ marginLeft: "-1px" }}>
+                    <span>Product Name:</span>
+                    {product.name}
+                  </p>
+                  <p style={{ marginLeft: "-1px" }}>
+                    <span>Product Price:</span>
                     {product.price.toLocaleString("vi-VN")} VND
                   </p>
                   <div style={{ marginLeft: "-1px" }}>
+                    <span>Product Image 1:</span>
                     <img
                       src={`http://localhost:5000/${product.imageUrls[0]}`}
                     />
                   </div>
-                  <p style={{ marginLeft: "-1px" }}>{product.category}</p>
+                  <p style={{ marginLeft: "-1px" }}>
+                    <span>Product Category:</span>
+                    {product.category}
+                  </p>
                   <p style={{ marginLeft: "-1px" }} className={styles.edit}>
                     <button
                       type="button"
