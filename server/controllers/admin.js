@@ -242,3 +242,28 @@ exports.adminAddMessage = (req, res, next) => {
     });
 };
 // --------------------------------------------------------------
+
+// --- Phương thức thay đổi phân quyền user type ----------------
+// --- Sử dụng middleware để check admin type -------------------
+exports.userTypeUpdate = (req, res, next) => {
+  const userTypeUpdate = req.body.userTypeUpdate;
+  const updateUserId = req.body.updateUserId;
+
+  User.findById(updateUserId)
+    .then((user) => {
+      user.userType = userTypeUpdate;
+      return user.save();
+    })
+    .then(() => {
+      res.status(201).json({
+        message: "Updated user type!",
+      });
+    })
+    .catch((err) => {
+      console.log("err User.findById userTypeUpdate:", err);
+      res.status(500).json({
+        message: "Cannot change user type now!",
+      });
+    });
+};
+// -----------------------------------------------------------------

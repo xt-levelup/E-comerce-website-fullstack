@@ -90,6 +90,12 @@ router.post(
   adminControllers.deleteProduct
 );
 
+router.post(
+  "/userTypeUpdate",
+  authCheck.checkAdmin,
+  adminControllers.userTypeUpdate
+);
+
 router.post("/getUsers", authCheck.checkCounselor, adminControllers.getUsers);
 
 router.post("/getChats", adminControllers.getChats);

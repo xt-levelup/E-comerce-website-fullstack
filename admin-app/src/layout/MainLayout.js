@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import styles from "./MainLayout.module.css";
@@ -8,6 +8,8 @@ import { authSliceActions } from "../store/authSlice";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const auth = useSelector((state) => {
     return state.authSlice.auth;
@@ -15,6 +17,86 @@ const MainLayout = () => {
   const localStorageData = useSelector((state) => {
     return state.authSlice.localStorageData;
   });
+  const [menuList, setMenuList] = useState([
+    "Chat Room",
+    "Product Page",
+    "Add Product",
+    "Edit Product",
+    "Users",
+  ]);
+  const [currentPage, setCurrentPage] = useState("Dashboard");
+  const [downClick, setDownClick] = useState(false);
+
+  useEffect(() => {
+    console.log("location:", location);
+    if (location.pathname === "/") {
+      setCurrentPage("Dashboard");
+    } else if (location.pathname === "/chat") {
+      setCurrentPage("Chat Room");
+    } else if (location.pathname === "/chat") {
+      setCurrentPage("Chat Room");
+    } else if (location.pathname === "/product") {
+      setCurrentPage("Product Page");
+    } else if (location.pathname === "/add-product") {
+      setCurrentPage("Add Product");
+    } else if (location.pathname === "/users-page") {
+      setCurrentPage("Users");
+    } else if (location.pathname === "/login") {
+      setCurrentPage("Login Page");
+    } else if (location.pathname === "/register") {
+      setCurrentPage("Register Page");
+    } else {
+      setCurrentPage("Edit Product");
+    }
+  }, [location]);
+
+  useEffect(() => {
+    console.log("currentPage:", currentPage);
+    const menuFullList = [
+      "Dashboard",
+      "Chat Room",
+      "Product Page",
+      "Add Product",
+      "Users",
+    ];
+    if (currentPage) {
+      const newMenuList = menuFullList.filter((item) => {
+        return item !== currentPage;
+      });
+      console.log("newMenuList:", newMenuList);
+      setMenuList(newMenuList);
+    }
+  }, [currentPage]);
+
+  const downButtonHandle = () => {
+    setDownClick(!downClick);
+  };
+
+  const clickListItemHandle = (event) => {
+    // console.log("event.target:", event.target);
+    console.log("event.target.textContent:", event.target.textContent);
+    if (event.target.textContent === "Dashboard") {
+      setCurrentPage(event.target.textContent);
+      setDownClick(false);
+      navigate("/");
+    } else if (event.target.textContent === "Chat Room") {
+      setCurrentPage(event.target.textContent);
+      setDownClick(false);
+      navigate("/chat");
+    } else if (event.target.textContent === "Product Page") {
+      setCurrentPage(event.target.textContent);
+      setDownClick(false);
+      navigate("/product");
+    } else if (event.target.textContent === "Add Product") {
+      setCurrentPage(event.target.textContent);
+      setDownClick(false);
+      navigate("/add-product");
+    } else if (event.target.textContent === "Users") {
+      setCurrentPage(event.target.textContent);
+      setDownClick(false);
+      navigate("/users-page");
+    }
+  };
 
   // --- Chức năng logout ----------------------------------
   const logoutHandle = () => {
@@ -62,6 +144,62 @@ const MainLayout = () => {
             >
               Add Product
             </NavLink>
+            <NavLink
+              to="/users-page"
+              className={({ isActive }) => {
+                return isActive ? styles.active : undefined;
+              }}
+            >
+              Users
+            </NavLink>
+            <div className={styles["media-under-800"]}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "1em",
+                }}
+              >
+                <h3>{currentPage}</h3>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6"
+                  width="24px"
+                  height="24px"
+                  style={{ cursor: "pointer" }}
+                  onClick={downButtonHandle}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25"
+                  />
+                </svg>
+              </div>
+              {downClick && (
+                <div className={styles["menu-list"]}>
+                  {menuList &&
+                    Array.isArray(menuList) &&
+                    menuList.length > 0 &&
+                    menuList.map((item) => {
+                      return (
+                        <p
+                          key={item}
+                          style={{ cursor: "pointer" }}
+                          onClick={clickListItemHandle}
+                        >
+                          {item}
+                        </p>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
           </div>
           {!auth && (
             <div className={styles["nav-right"]}>
