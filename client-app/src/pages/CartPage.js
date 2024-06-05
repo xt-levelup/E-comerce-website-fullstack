@@ -411,18 +411,28 @@ const CartPage = () => {
                     </div>
                   );
                 })}
-              {!cartToView ||
-                (!cartData.length && (
-                  <p
-                    style={{
-                      color: "red",
-                      textAlign: "center",
-                      fontSize: "18px",
-                    }}
-                  >
-                    You could get some product in shop page!
-                  </p>
-                ))}
+              {!cartToView && (
+                <p
+                  style={{
+                    color: "red",
+                    textAlign: "center",
+                    fontSize: "18px",
+                  }}
+                >
+                  You could get some product in shop page!
+                </p>
+              )}
+              {cartToView && !cartToView.length && (
+                <p
+                  style={{
+                    color: "red",
+                    textAlign: "center",
+                    fontSize: "18px",
+                  }}
+                >
+                  You could get some product in shop page!
+                </p>
+              )}
               <div className={styles.nav}>
                 <div onClick={goToShopping}>
                   <svg

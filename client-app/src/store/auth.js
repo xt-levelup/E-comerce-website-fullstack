@@ -7,7 +7,7 @@ const authInit = {
   password: "",
   phone: "",
   errorMessage: null,
-  cartToView: [],
+  cartToView: null,
 };
 
 const authSlice = createSlice({
