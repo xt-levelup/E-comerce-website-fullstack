@@ -2,21 +2,18 @@ import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
 import styles from "./HistoryPage.module.css";
 import { authSliceActions } from "../store/auth";
 
 const HistoryPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
-
   const [orders, setOrders] = useState([]);
   const [errorHistory, setErrorHistory] = useState(null);
 
@@ -44,7 +41,6 @@ const HistoryPage = () => {
       },
     });
     const data = await response.json();
-    console.log("data getOrder:", data);
     if (!response.ok) {
       if (
         (data && data.message === "Wrong token!") ||
@@ -69,7 +65,6 @@ const HistoryPage = () => {
       const newData = data.slice().sort((a, b) => {
         return b.orderDate.localeCompare(a.orderDate);
       });
-      console.log("newData:", newData);
       setOrders(newData);
     }
   };
@@ -77,19 +72,6 @@ const HistoryPage = () => {
   const viewHandle = (orderId) => {
     navigate(`/history-detail/${orderId}`);
   };
-
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("errorHistory:", errorHistory);
-  }, [errorHistory]);
-  useEffect(() => {
-    console.log("orders:", orders);
-  }, [orders]);
-  useEffect(() => {
-    console.log("author:", author);
-  }, [author]);
 
   return (
     <div className={styles.contain}>

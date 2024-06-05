@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import styles from "./ProductPage.module.css";
 import { fetchProductsSliceAction } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/authSlice";
@@ -10,36 +9,33 @@ import { authSliceActions } from "../store/authSlice";
 const ProductPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const productData = useSelector((state) => {
     return state.fetchProductsSlice.productData;
   });
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
-  const localStorageData = useSelector((state) => {
-    return state.authSlice.localStorageData;
+  const auth = useSelector((state) => {
+    return state.authSlice.auth;
   });
-
   const [searchInput, setSearchInput] = useState("");
   const [currentProductData, setCurrentProductData] = useState(null);
   const [deleteBox, setDeleteBox] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchProductsSliceAction());
-    dispatch(
-      authSliceActions.localStorageDataUpdate(
-        JSON.parse(localStorage.getItem("userData"))
-      )
-    );
+    if (JSON.parse(localStorage.getItem("userData"))) {
+      dispatch(fetchProductsSliceAction());
+    }
   }, []);
+
   useEffect(() => {
-    setCurrentProductData(productData);
-  }, [productData]);
-  useEffect(() => {
-    dispatch(authSliceActions.errorMessageUpdate(null));
-  }, []);
+    if (auth) {
+      setCurrentProductData(productData);
+    } else {
+      setCurrentProductData(null);
+    }
+  }, [productData, auth]);
 
   const searchInputHandle = (event) => {
     setSearchInput(event.target.value);
@@ -71,6 +67,7 @@ const ProductPage = () => {
   };
 
   const deleteHandle = async (productId) => {
+    const localStorageData = JSON.parse(localStorage.getItem("userData"));
     const token = localStorageData && localStorageData.token;
     const urlServer = "http://localhost:5000/deleteProduct";
     try {
@@ -86,7 +83,6 @@ const ProductPage = () => {
       });
 
       const data = await response.json();
-      console.log("data delete:", data);
 
       if (!response.ok) {
         if (
@@ -95,7 +91,6 @@ const ProductPage = () => {
           (data && data.message === "jwt malformed")
         ) {
           localStorage.removeItem("userData");
-          dispatch(authSliceActions.localStorageDataUpdate(null));
           dispatch(authSliceActions.authUpdate(false));
           dispatch(
             authSliceActions.errorMessageUpdate(
@@ -103,8 +98,6 @@ const ProductPage = () => {
             )
           );
         } else if (data && data.message === "Not authorized!") {
-          localStorage.removeItem("userData");
-          dispatch(authSliceActions.localStorageDataUpdate(null));
           dispatch(
             authSliceActions.errorMessageUpdate(
               "You are not admin  type! Please login again or choose another task!"
@@ -131,8 +124,6 @@ const ProductPage = () => {
           "Cannot delete product now! Maybe you login again or Please trying later!"
         )
       );
-      localStorage.removeItem("userData");
-      dispatch(authSliceActions.localStorageDataUpdate(null));
     }
   };
 
@@ -142,24 +133,9 @@ const ProductPage = () => {
 
   const backgroundColorProduct = (index) => {
     if (index % 2 === 0) {
-      console.log("index:", index);
-      console.log("index%2:", index % 2);
       return "rgb(240 240 240)";
     }
   };
-
-  useEffect(() => {
-    console.log("productData:", productData);
-  }, [productData]);
-  useEffect(() => {
-    console.log("searchInput:", searchInput);
-  }, [searchInput]);
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("deleteProductId:", deleteProductId);
-  }, [deleteProductId]);
 
   return (
     <div className={styles.contain}>
@@ -227,7 +203,6 @@ const ProductPage = () => {
                     </button>
                     <button
                       style={{ backgroundColor: "red", color: "white" }}
-                      // onClick={() => deleteHandle(product._id)}
                       onClick={() => deleteButton(product._id)}
                     >
                       Delete
@@ -248,7 +223,9 @@ const ProductPage = () => {
                 position: "fixed",
                 transform: "translate(-50%,-50%)",
                 top: "50%",
-                left: "50%",
+                right: "-50%",
+                width: "80%",
+                height: "80%",
                 padding: "1em",
                 backgroundColor: "rgb(150 150 150)",
                 display: "flex",

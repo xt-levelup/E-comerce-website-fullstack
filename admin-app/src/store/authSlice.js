@@ -5,8 +5,8 @@ const initValues = {
   name: "",
   phone: "",
   errorMessage: null,
-  auth: false,
-  localStorageData: null,
+  auth: JSON.parse(localStorage.getItem("userData")) ? true : false,
+  localStorageData: JSON.parse(localStorage.getItem("userData")),
 };
 
 const authSlice = createSlice({

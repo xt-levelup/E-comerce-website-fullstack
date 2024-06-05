@@ -1,18 +1,16 @@
 import { Helmet } from "react-helmet";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import styles from "./HomePage.module.css";
 import { authSliceActions } from "../store/authSlice";
 
 const HomePage = () => {
   const dispatch = useDispatch();
-
-  const localStorageData = useSelector((state) => {
-    return state.authSlice.localStorageData;
-  });
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
+  });
+  const auth = useSelector((state) => {
+    return state.authSlice.auth;
   });
 
   const [usersData, setUsersData] = useState(null);
@@ -30,6 +28,7 @@ const HomePage = () => {
 
   const getUsers = async () => {
     const urlServer = "http://localhost:5000/getUsers";
+    const localStorageData = JSON.parse(localStorage.getItem("userData"));
     const token = localStorageData && localStorageData.token;
     const response = await fetch(urlServer, {
       method: "POST",
@@ -39,18 +38,26 @@ const HomePage = () => {
     });
     const data = await response.json();
     if (!response.ok) {
-      dispatch(
-        authSliceActions.errorMessageUpdate(
-          (data && data.message === "jwt malformed") ||
-            (data && data.message === "jwt expired")
-            ? "Login again to access data!"
-            : data && data.message
-            ? data.message
-            : data && data.msg
-            ? data.msg
-            : "Cannot get users now! Please try again later!"
-        )
-      );
+      if (
+        (data && data.message === "jwt malformed") ||
+        (data && data.message === "jwt expired")
+      ) {
+        localStorage.removeItem("userData");
+        dispatch(
+          authSliceActions.errorMessageUpdate("Login again to access data!")
+        );
+        dispatch(authSliceActions.authUpdate(false));
+      } else {
+        dispatch(
+          authSliceActions.errorMessageUpdate(
+            data && data.message
+              ? data.message
+              : data && data.msg
+              ? data.msg
+              : "Cannot get users now! Please try again later!"
+          )
+        );
+      }
     } else {
       setUsersData(data);
       dispatch(authSliceActions.errorMessageUpdate(null));
@@ -68,19 +75,14 @@ const HomePage = () => {
   useEffect(() => {
     const now = new Date();
     const monthNow = now.getMonth();
-    // console.log("now:", now);
-    // console.log("monthNow:", monthNow);
-
     const dataThisMonth =
       usersData &&
       usersData.orders &&
       Array.isArray(usersData.orders) &&
       usersData.orders.filter((order) => {
         const newOrderDay = new Date(order.orderDate);
-        // console.log("newOrderDate.getMonth():", newOrderDay.getMonth());
         return newOrderDay.getMonth() === monthNow;
       });
-    // console.log("dataThisMonth:", dataThisMonth);
     const sumEarningData =
       dataThisMonth &&
       Array.isArray(dataThisMonth) &&
@@ -91,12 +93,11 @@ const HomePage = () => {
         .reduce((acc, current) => {
           return acc + current;
         }, 0);
-    // console.log("sumEarningData:", sumEarningData);
+
     setEarningOfMonth(sumEarningData);
 
     const newOrders =
       dataThisMonth && Array.isArray(dataThisMonth) && dataThisMonth.length;
-    console.log("newOrders:", newOrders);
     setOrdersOfMonth(newOrders);
 
     const newestOrderData =
@@ -110,28 +111,8 @@ const HomePage = () => {
         })
         .slice(0, 10);
 
-    // console.log("newestOrderData:", newestOrderData);
     setNewestOrders(newestOrderData);
   }, [usersData]);
-
-  useEffect(() => {
-    console.log("localStorageData:", localStorageData);
-  }, [localStorageData]);
-  useEffect(() => {
-    console.log("usersData:", usersData);
-  }, [usersData]);
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("earningOfMonth:", earningOfMonth);
-  }, [earningOfMonth]);
-  useEffect(() => {
-    console.log("ordersOfMonth:", ordersOfMonth);
-  }, [ordersOfMonth]);
-  useEffect(() => {
-    console.log("newestOrders:", newestOrders);
-  }, [newestOrders]);
 
   return (
     <div className={styles.contain}>
@@ -139,7 +120,7 @@ const HomePage = () => {
         <title>Dashboard</title>
       </Helmet>
       <h2>Dashboard</h2>
-      {!errorMessage && (
+      {auth && !errorMessage && (
         <div className={styles.upon}>
           <div className={styles["upon-part"]}>
             <div>
@@ -232,7 +213,7 @@ const HomePage = () => {
           </div>
         </div>
       )}
-      {!errorMessage && (
+      {auth && !errorMessage && (
         <div className={styles.bottom}>
           <h4>History</h4>
           <div className={styles["history-show"]}>
@@ -342,6 +323,18 @@ const HomePage = () => {
               })}
           </div>
         </div>
+      )}
+      {!auth && (
+        <p
+          style={{
+            color: "red",
+            textAlign: "center",
+            fontWeight: "600",
+            fontSize: "18px",
+          }}
+        >
+          Login to access data!
+        </p>
       )}
       {errorMessage && (
         <p

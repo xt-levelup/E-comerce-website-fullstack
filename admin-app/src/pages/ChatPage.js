@@ -2,17 +2,12 @@ import { Helmet } from "react-helmet";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import openSocket from "socket.io-client";
-
 import styles from "./ChatPage.module.css";
 import { authSliceActions } from "../store/authSlice";
 import avatarClient from "../images/avatar01.png";
 
 const ChatPage = () => {
   const dispatch = useDispatch();
-
-  const localStorageData = useSelector((state) => {
-    return state.authSlice.localStorageData;
-  });
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
@@ -25,7 +20,6 @@ const ChatPage = () => {
   const [userIdClick, setUserIdClick] = useState(null);
   const [currentMessage, setCurrentMessagge] = useState("");
   const [userIdChat, setUserIdChat] = useState(null);
-  const [count, setCount] = useState(1);
 
   useEffect(() => {
     dispatch(
@@ -47,6 +41,7 @@ const ChatPage = () => {
   };
 
   const getChats = async () => {
+    const localStorageData = JSON.parse(localStorage.getItem("userData"));
     const token = localStorageData && localStorageData.token;
     const urlServer = "http://localhost:5000/getChats";
     const response = await fetch(urlServer, {
@@ -60,23 +55,27 @@ const ChatPage = () => {
       }),
     });
     const data = await response.json();
-    console.log("data getChats:", data);
     if (!response.ok) {
-      dispatch(
-        authSliceActions.errorMessageUpdate(
-          (data && data.message === "jwt malformed") ||
-            (data && data.message === "jwt expired")
-            ? "Login again to access data!"
-            : data && data.message
-            ? data.message
-            : data && data.msg
-            ? data.msg
-            : "Please login again and trying later!"
-        )
-      );
-      localStorage.removeItem("userData");
-      dispatch(authSliceActions.localStorageDataUpdate(null));
-      dispatch(authSliceActions.authUpdate(false));
+      if (
+        (data && data.message === "jwt malformed") ||
+        (data && data.message === "jwt expired")
+      ) {
+        localStorage.removeItem("userData");
+        dispatch(
+          authSliceActions.errorMessageUpdate("Login again to access data!")
+        );
+        dispatch(authSliceActions.authUpdate(false));
+      } else {
+        dispatch(
+          authSliceActions.errorMessageUpdate(
+            data && data.message
+              ? data.message
+              : data && data.msg
+              ? data.msg
+              : "Cannot get chats now! Please try again later!"
+          )
+        );
+      }
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setChatData(data);
@@ -92,8 +91,6 @@ const ChatPage = () => {
         setChatContent([]);
       }
     }
-    // const messages =
-
     return data;
   };
 
@@ -101,11 +98,6 @@ const ChatPage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("adminPosts", (data) => {
       if (data.action === "adminAddMessage") {
-        console.log(
-          `socket ${
-            JSON.parse(localStorage.getItem("userData")).email
-          } connected!: ${count}`
-        );
         getChats();
       }
     });
@@ -115,11 +107,6 @@ const ChatPage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("posts", (data) => {
       if (data.action === "addMessage") {
-        console.log(
-          `socket ${
-            JSON.parse(localStorage.getItem("userData")).email
-          } connected!: ${count}`
-        );
         getChats();
       }
     });
@@ -129,11 +116,6 @@ const ChatPage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("posts", (data) => {
       if (data.action === "deleteMessageSession") {
-        console.log(
-          `socket ${
-            JSON.parse(localStorage.getItem("userData")).email
-          } connected!: ${count}`
-        );
         getChats();
       }
     });
@@ -141,6 +123,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     try {
+      const localStorageData = JSON.parse(localStorage.getItem("userData"));
       if (localStorageData && localStorageData.userId) {
         getChats();
       }
@@ -163,7 +146,6 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    console.log("chatData:", chatData);
     const currentChat =
       chatData &&
       chatData.length > 0 &&
@@ -176,7 +158,7 @@ const ChatPage = () => {
   }, [chatData]);
 
   const addMessageServer = async (event) => {
-    // event.preventDefault();
+    const localStorageData = JSON.parse(localStorage.getItem("userData"));
     const token = localStorageData && localStorageData.token;
     const urlServer = "http://localhost:5000/adminAddMessage";
     const response = await fetch(urlServer, {
@@ -194,10 +176,14 @@ const ChatPage = () => {
     const data = await response.json();
     if (!response.ok) {
       if (
-        (data && data.msg === "Chat not be empty!") ||
-        (data && data.msg === "Who are you want to send message?")
+        (data && data.message === "jwt malformed") ||
+        (data && data.message === "jwt expired")
       ) {
-        dispatch(authSliceActions.errorMessageUpdate(data.msg));
+        localStorage.removeItem("userData");
+        dispatch(
+          authSliceActions.errorMessageUpdate("Login again to access data!")
+        );
+        dispatch(authSliceActions.authUpdate(false));
       } else {
         dispatch(
           authSliceActions.errorMessageUpdate(
@@ -205,18 +191,14 @@ const ChatPage = () => {
               ? data.message
               : data && data.msg
               ? data.msg
-              : "Please login and trying again later!"
+              : "Cannot get add message now! Please try again later!"
           )
         );
-        dispatch(authSliceActions.localStorageDataUpdate(null));
-        localStorage.removeItem("userData");
       }
     } else {
-      // setChatData(data);
       dispatch(authSliceActions.errorMessageUpdate(null));
       getChats();
       setCurrentMessagge("");
-      setCount(count + 1);
     }
   };
 
@@ -232,27 +214,6 @@ const ChatPage = () => {
       }
     }
   };
-
-  // const closeErrorHandle = () => {
-  //   dispatch(authSliceActions.errorMessageUpdate(null));
-  // };
-
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  // useEffect(() => {
-  //   console.log("localStorageData:", localStorageData);
-  // }, [localStorageData]);
-
-  useEffect(() => {
-    console.log("chatContent:", chatContent);
-  }, [chatContent]);
-  // useEffect(() => {
-  //   console.log("currentMessage:", currentMessage);
-  // }, [currentMessage]);
-  // useEffect(() => {
-  //   console.log("userIdChat:", userIdChat);
-  // }, [userIdChat]);
 
   return (
     <div className={styles.contain}>

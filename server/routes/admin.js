@@ -98,7 +98,7 @@ router.post(
 
 router.post("/getUsers", authCheck.checkCounselor, adminControllers.getUsers);
 
-router.post("/getChats", adminControllers.getChats);
+router.post("/getChats", authCheck.checkCounselor, adminControllers.getChats);
 
 router.post(
   "/adminAddMessage",

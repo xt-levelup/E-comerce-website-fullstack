@@ -3,7 +3,6 @@ import styles from "./ShopPage.module.css";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
 import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/auth";
 import { navSliceActions } from "../store/nav";
@@ -11,7 +10,6 @@ import { navSliceActions } from "../store/nav";
 const ShopPage = () => {
   const [valueShow, setValueShow] = useState(null);
   const [pageNumber, setPageNumber] = useState("1");
-  // const [navAction, setNavAction] = useState("all");
   const [searchValue, setSearchValue] = useState("");
 
   const dispatch = useDispatch();
@@ -45,62 +43,52 @@ const ShopPage = () => {
 
   const allHandle = () => {
     setValueShow("All");
-    // setNavAction("all");
     dispatch(navSliceActions.navActionUpdate("all"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const iphoneHandle = () => {
     setValueShow("iPhone");
-    // setNavAction("iPhone");
     dispatch(navSliceActions.navActionUpdate("iPhone"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const ipadHandle = () => {
     setValueShow("iPad");
-    // setNavAction("iPad");
     dispatch(navSliceActions.navActionUpdate("iPad"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const macbookHandle = () => {
     setValueShow("Macbook");
-    // setNavAction("macbook");
     dispatch(navSliceActions.navActionUpdate("macbook"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const airpodHandle = () => {
     setValueShow("Airpod");
-    // setNavAction("airpod");
     dispatch(navSliceActions.navActionUpdate("airpod"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const watchHandle = () => {
     setValueShow("Watch");
-    // setNavAction("watch");
     dispatch(navSliceActions.navActionUpdate("watch"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const mouseHandle = () => {
     setValueShow("Mouse");
-    // setNavAction("mouse");
     dispatch(navSliceActions.navActionUpdate("mouse"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const keyboardHandle = () => {
     setValueShow("Keyboard");
-    // setNavAction("keyboard");
     dispatch(navSliceActions.navActionUpdate("keyboard"));
     window.scrollTo({ top: 300, behavior: "smooth" });
   };
   const otherHandle = () => {
     setValueShow("Other");
-    // setNavAction("other");
     dispatch(navSliceActions.navActionUpdate("other"));
     window.scrollTo({ top: "450px", behavior: "smooth" });
   };
 
   useEffect(() => {
     if (navAction === "all") {
-      // console.log("productData:", productData);
       setValueShow(productData);
     } else if (navAction === "iPhone") {
       const iphoneData = productData.filter((prod) => {
@@ -198,29 +186,9 @@ const ShopPage = () => {
         );
       });
       setValueShow(searchData);
-      // setNavAction(null);
       dispatch(navSliceActions.navActionUpdate(""));
     }
   }, [searchValue, productData]);
-
-  useEffect(() => {
-    console.log("productData:", productData);
-  }, [productData]);
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("valueShow:", valueShow);
-  }, [valueShow]);
-  useEffect(() => {
-    console.log("pageNumber:", pageNumber);
-  }, [pageNumber]);
-  useEffect(() => {
-    console.log("navAction:", navAction);
-  }, [navAction]);
-  useEffect(() => {
-    console.log("searchValue:", searchValue);
-  }, [searchValue]);
 
   return (
     <div>

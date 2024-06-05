@@ -1,19 +1,17 @@
-import { Outlet, NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "../pages/UsersPage.module.css";
 import { authSliceActions } from "../store/authSlice";
 import { Helmet } from "react-helmet";
 
 const UsersPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const errorMessage = useSelector((state) => {
     return state.authSlice.errorMessage;
   });
-
+  const auth = useSelector((state) => {
+    return state.authSlice.auth;
+  });
   const [usersData, setUsersData] = useState(null);
   const [usersList, setUsersList] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -101,7 +99,6 @@ const UsersPage = () => {
 
   const userTypeUpdateHandle = (selectId, updateUserId) => {
     const requireValue = document.getElementById(selectId).value;
-    console.log("requireValue", requireValue);
     try {
       userTypeUpdateServer(requireValue, updateUserId);
     } catch (err) {
@@ -137,7 +134,6 @@ const UsersPage = () => {
           return user._id.toString() === currentUserId.toString();
         }
       });
-      //   console.log("currentUserFound:", currentUserFound);
       setCurrentUser(currentUserFound);
       if (currentUserFound && currentUserFound.userType) {
         setIsAdmin(currentUserFound.userType === "admin" ? true : false);
@@ -149,26 +145,13 @@ const UsersPage = () => {
     }
   }, [usersData]);
 
-  useEffect(() => {
-    console.log("errorMessage:", errorMessage);
-  }, [errorMessage]);
-  useEffect(() => {
-    console.log("usersData:", usersData);
-  }, [usersData]);
-  useEffect(() => {
-    console.log("currentUser:", currentUser);
-  }, [currentUser]);
-  useEffect(() => {
-    console.log("usersList:", usersList);
-  }, [usersList]);
-
   return (
     <div className={styles.contain}>
       <Helmet>
         <title>Users</title>
       </Helmet>
       <h2>Users</h2>
-      {!errorMessage && (
+      {auth && !errorMessage && (
         <div className={styles.upon}>
           <div className={styles["current-user"]}>
             <h3>Current User: {currentUser && currentUser.email}</h3>
@@ -186,7 +169,7 @@ const UsersPage = () => {
           </div>
         </div>
       )}
-      {!errorMessage && (
+      {auth && !errorMessage && (
         <div className={styles.bottom}>
           <h3>User List</h3>
           {usersList &&

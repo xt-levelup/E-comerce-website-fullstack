@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import openSocket from "socket.io-client";
-
 import { fetchProductsSliceActions } from "../store/fetchProductsSlice";
 import { authSliceActions } from "../store/auth";
 import { navSliceActions } from "../store/nav";
@@ -44,10 +43,6 @@ const HomePage = () => {
     navigate("/shop");
   };
 
-  const imageNavigation = () => {
-    navigate("/shop");
-  };
-
   const messageBoxHandle = () => {
     setBoxShow(!boxShow);
   };
@@ -72,11 +67,6 @@ const HomePage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("posts", (data) => {
       if (data.action === "addMessage") {
-        // console.log(
-        //   `socket ${
-        //     JSON.parse(localStorage.getItem("user")).email
-        //   } connected!: ${count}`
-        // );
         getChatDataClient();
       }
     });
@@ -86,11 +76,6 @@ const HomePage = () => {
     const socket = openSocket("http://localhost:5000");
     socket.on("adminPosts", (data) => {
       if (data.action === "adminAddMessage") {
-        // console.log(
-        //   `socket ${
-        //     JSON.parse(localStorage.getItem("user")).email
-        //   } connected!: ${count}`
-        // );
         getChatDataClient();
       }
     });
@@ -104,9 +89,6 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    // dispatch(
-    //   authSliceActions.authorUpdate(JSON.parse(localStorage.getItem("user")))
-    // );
     if (author) {
       setUserId(author.userId);
     }
@@ -125,7 +107,6 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    console.log("currentMessage:", currentMessage);
     if (currentMessage === "/end") {
       setBoxShow(false);
       deleteMessageHandle();
@@ -150,7 +131,6 @@ const HomePage = () => {
       }),
     });
     const data = await response.json();
-    console.log("data getChatDataClient:", data);
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
@@ -162,8 +142,6 @@ const HomePage = () => {
         )
       );
       setMessageData(null);
-      // localStorage.removeItem("user");
-      // dispatch(authSliceActions.authorUpdate(null));
     } else {
       dispatch(authSliceActions.errorMessageUpdate(null));
       setMessageData(data);
@@ -187,7 +165,6 @@ const HomePage = () => {
       }),
     });
     const data = await response.json();
-    // console.log("data sendMessageHandle:", data);
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
@@ -221,7 +198,6 @@ const HomePage = () => {
       }),
     });
     const data = await response.json();
-    console.log("data deleteMessageHandle:", data);
     if (!response.ok) {
       dispatch(
         authSliceActions.errorMessageUpdate(
@@ -236,10 +212,6 @@ const HomePage = () => {
       dispatch(authSliceActions.errorMessageUpdate(null));
     }
   };
-
-  useEffect(() => {
-    console.log("boxShow:", boxShow);
-  }, [boxShow]);
 
   const iphoneNavigation = () => {
     dispatch(navSliceActions.navActionUpdate("iPhone"));
@@ -272,33 +244,9 @@ const HomePage = () => {
 
   const detailButtonHandle = () => {
     const productIdImage = imageClickData._id;
-    console.log("productIdImage:", productIdImage);
     setImageClickData(null);
     navigate(`/detail/${productIdImage}`);
   };
-
-  // useEffect(() => {
-  //   console.log("errorMessage:", errorMessage);
-  // }, [errorMessage]);
-
-  // useEffect(() => {
-  //   console.log("messageData:", messageData);
-  // }, [messageData]);
-  useEffect(() => {
-    console.log("author:", author);
-  }, [author]);
-  useEffect(() => {
-    console.log("productData:", productData);
-  }, [productData]);
-  useEffect(() => {
-    console.log("imageClickData:", imageClickData);
-  }, [imageClickData]);
-  useEffect(() => {
-    console.log("userId:", userId);
-  }, [userId]);
-  useEffect(() => {
-    console.log("navAction:", navAction);
-  }, [navAction]);
 
   return (
     <div>

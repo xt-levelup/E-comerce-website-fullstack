@@ -1,20 +1,17 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-
 import styles from "./MainLayout.module.css";
 import { authSliceActions } from "../store/auth";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const author = useSelector((state) => {
     return state.authSlice.author;
   });
 
   const [emailName, setEmailName] = useState(null);
-  const [selectItem, setSelectItem] = useState("");
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
@@ -24,7 +21,6 @@ const MainLayout = () => {
   }, []);
 
   useEffect(() => {
-    console.log("author:", author);
     setEmailName(author && author.email.split("@")[0].slice(0, 6).trim());
   }, [author]);
 
@@ -45,21 +41,6 @@ const MainLayout = () => {
     navigate("/history");
     setShowMore(false);
   };
-
-  useEffect(() => {
-    if (selectItem === "Cart") {
-      navigate("/cart");
-    } else if (selectItem === "History") {
-      navigate("/history");
-    }
-  }, [selectItem]);
-
-  useEffect(() => {
-    console.log("emailName:", emailName);
-  }, [emailName]);
-  useEffect(() => {
-    console.log("selectItem:", selectItem);
-  }, [selectItem]);
 
   return (
     <div>

@@ -10,7 +10,6 @@ const MainLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
   const auth = useSelector((state) => {
     return state.authSlice.auth;
   });
@@ -27,8 +26,11 @@ const MainLayout = () => {
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [downClick, setDownClick] = useState(false);
 
+  // useEffect(()=>{
+  //   const
+  // },[]);
+
   useEffect(() => {
-    console.log("location:", location);
     if (location.pathname === "/") {
       setCurrentPage("Dashboard");
     } else if (location.pathname === "/chat") {
@@ -51,7 +53,6 @@ const MainLayout = () => {
   }, [location]);
 
   useEffect(() => {
-    console.log("currentPage:", currentPage);
     const menuFullList = [
       "Dashboard",
       "Chat Room",
@@ -63,7 +64,6 @@ const MainLayout = () => {
       const newMenuList = menuFullList.filter((item) => {
         return item !== currentPage;
       });
-      console.log("newMenuList:", newMenuList);
       setMenuList(newMenuList);
     }
   }, [currentPage]);
@@ -73,8 +73,6 @@ const MainLayout = () => {
   };
 
   const clickListItemHandle = (event) => {
-    // console.log("event.target:", event.target);
-    console.log("event.target.textContent:", event.target.textContent);
     if (event.target.textContent === "Dashboard") {
       setCurrentPage(event.target.textContent);
       setDownClick(false);
